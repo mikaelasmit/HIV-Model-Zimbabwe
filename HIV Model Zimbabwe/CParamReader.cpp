@@ -72,6 +72,8 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
     char* token;
     int nullTerminal;
     
+    //int countrounds=0;
+    
     // Run through the lines of the file for the parameter
     while(!paramFileStream.eof() && !found)
     {
@@ -86,7 +88,7 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
             {
                 columns=0;                                      // Initialise the rows and columns back to 0
                 rows=0;
-                E(cout << "The following is being loaded " << token << endl;)
+                //cout << "The following is being loaded " << token << endl;
                 
                 while (token[0]!=';')
                 {
@@ -138,6 +140,8 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
                 //cout << "FINAL: " <<paramContainer << " rows: " << rows << " columns: " << columns << endl;
             }
         }
+        //countrounds++;
+        //cout << "Counts is: " << countrounds << " and token: " << token << endl;
     }
     
     

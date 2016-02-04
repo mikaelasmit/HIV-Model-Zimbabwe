@@ -36,6 +36,7 @@ extern double** HIVArray_Women;
 extern double** HIVArray_Men;
 
 extern double** NrChildrenArray;
+extern double* NrChildrenProb;
 extern double** Age1950Array;
 extern int*     ArrayMin;
 extern int*     ArrayMax;
@@ -121,7 +122,7 @@ void person::GenderDistribution(){
     E(cout << "We are assigning gender!" << endl;)
     
     double	r = ((double) rand() / (RAND_MAX)) ;
-    if (r<=0.5043){Sex=1;}									// Where 1 = man and 2= woman
+    if (r<=0.5014){Sex=1;}									// Where 1 = man and 2= woman
     else {Sex=2;}
     
     E(cout << "We finished assigning gender!" << endl;)
@@ -160,8 +161,10 @@ void person::GetDateOfBaby(){								// This method already calculates the child
         int NrChildren = 0;
         
         
-        if (r_nr<NrChildrenArray[2][index]){NrChildren=NrChildrenArray[0][index];}
-        if (r_nr>=NrChildrenArray[2][index]){NrChildren=NrChildrenArray[1][index];}
+        if (r_nr<NrChildrenProb[index]){NrChildren=NrChildrenArray[0][index];}
+        if (r_nr>=NrChildrenProb[index]){NrChildren=NrChildrenArray[1][index];}
+        
+        //cout << "R_nr: " << r_nr << " Number of Children: " << NrChildren << " Cut off: " << NrChildrenProb[index] << " index: " << index << endl;
         
         
         //// --- Lets see when I will having all my children --- ////
@@ -185,13 +188,17 @@ void person::GetDateOfBaby(){								// This method already calculates the child
             
             DateOfBirthTest = DoB + 15 +j;
             
-            while (DateOfBirthTest>=DateOfDeath){			// Run this loop in case birth ocurrs before birth
+            while (DateOfBirthTest>=DateOfDeath){			// Run this loop in case death ocurrs before birth
                 double	f = ((double)rand() / (RAND_MAX));
                 int j = 0;
                 while (f>BirthArray[index][j] && j<35){ j++; };
                 DateOfBirthTest = DoB + 15+j;
                 
             };
+            
+            if (j>=34){
+            //cout << "F: " << f << " Index: " << index << " J: " << j << endl;
+            }
             
             DatesBirth.push_back(DateOfBirthTest);			// Once we checked birth doesn't happen before birth lets push that in
             

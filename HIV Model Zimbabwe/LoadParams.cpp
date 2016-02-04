@@ -35,6 +35,7 @@ double*** ART_CD4_rates;
 
 // Demographic Arrays
 double**  NrChildrenArray;
+double*   NrChildrenProb;
 double**  Age1950Array;
 int*      ArrayMin;
 int*      ArrayMax;
@@ -52,7 +53,7 @@ void loadCD4StartArray(){
     E(cout<< "The CD4_startarray Parameter is being loaded" << endl;)
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -118,7 +119,7 @@ void loadCD4ProgArray()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -179,7 +180,7 @@ void loadCD4DeathArray()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -245,7 +246,7 @@ void loadCD4ARTArray()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -310,7 +311,7 @@ void loadNrChildren()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -360,8 +361,62 @@ void loadNrChildren()
             //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NrChildrenArray " << NrChildrenArray[j][i] << endl;
         }
     }
+    
+
     E(cout<< "The Nr_Children Parameter has been loaded" << endl;)
 }
+
+void loadNrChildrenProb()
+{
+    E(cout<< "The NrChildrenProb Parameter is being loaded" << endl;)
+    
+    // 1. make a param reader object.
+    CParamReader myReader;
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
+    if(! myReader.setNewFileName(fileName))
+    {
+        cout << "File " << fileName << " doesn't exist." << endl;
+        exit(0);
+    }
+    E(cout << "File " << fileName << " successfully added.  " << endl;)
+    
+    
+    // Some essential variables
+    char ParamName[] = "NrChildrenProb";                      // Insert correct paramname CAREFUL: match spelling EXACTLY
+    int length ;                                        // These will provide all the correct dimensions
+    int nr_rows;
+    int nr_columns;
+    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
+    vector<double> data;
+    
+    
+    // Lets load the data
+    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
+    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
+    
+    
+    // Lets convert to an array
+    // A. First by converting char* myValue to a vector
+    ss << myValue;
+    double a;
+    while (ss >> a){data.push_back(a);}
+    
+    
+    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
+    int col=nr_columns;
+    
+    
+    // Lets make the *** Array
+    NrChildrenProb= new double [col];
+    
+    for (int i=0; i<col; i++){
+        NrChildrenProb[i]=data[i];
+        //cout << "I: " << i << " I: " << i << endl;
+        //cout << "ArrayMin " << NrChildrenProb[i] << endl;
+    }
+    E(cout<< "The NrChildrenProb Parameter has been loaded" << endl;)
+}
+
 
 
 
@@ -371,7 +426,7 @@ void loadAgeDistribution()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -432,7 +487,7 @@ void loadAgeMin()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -485,7 +540,7 @@ void loadAgeMax()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -538,7 +593,7 @@ void loadNCDAgeArrayMin()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -591,7 +646,7 @@ void loadNCDAgeArrayMax()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -644,7 +699,7 @@ void loadNCDArray()
     
     // 1. make a param reader object.
     CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Documents/HIVModel/HIVModel/LoadParam.txt";
+    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
     if(! myReader.setNewFileName(fileName))
     {
         cout << "File " << fileName << " doesn't exist." << endl;
@@ -725,7 +780,7 @@ void loadNCDArray()
 void loadBirthArray(){
     
     E(cout << "Lets load the fertility array. " << endl;)
-    ifstream myfile("/Users/Mikaela/Documents/HIVModel/HIVModel/fertility.csv");
+    ifstream myfile("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/fertility.csv");
     
 
     // Lets include an error message in case file is not found
@@ -747,15 +802,17 @@ void loadBirthArray(){
         string line;
         getline(myfile, line);
         stringstream iss(line);
+
         
-        BirthArray[row]=new double[121];
-        for (int col = 0; col<121; col++){
+        BirthArray[row]=new double[35];
+        for (int col = 0; col<35; col++){
             string val;
             getline (iss, val, ',');
             stringstream convertor(val);
             convertor >>  BirthArray[row][col];
         }
     }
+    
     
     E(cout << "Fertility array has been read in successfully! " << endl;)
 }
@@ -768,7 +825,7 @@ void loadBirthArray(){
 void loadDeathArray_Women(){
     
     E(cout << "Lets load the death array for women. " << endl;)
-    ifstream myfile1("/Users/Mikaela/Documents/HIVModel/HIVModel/mortality_array_women.csv");
+    ifstream myfile1("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/mortality_array_women.csv");
     
     // Lets include an error message in case file is not found
     if (!myfile1.is_open())
@@ -810,7 +867,7 @@ void loadDeathArray_Women(){
 void loadDeathArray_Men()
 {
     E(cout << "Lets load the death array for men. " << endl;)
-    ifstream myfile2("/Users/Mikaela/Documents/HIVModel/HIVModel/mortality_array_men.csv");
+    ifstream myfile2("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/mortality_array_men.csv");
     
     // Lets include an error message in case file is not found
     if (!myfile2.is_open())
@@ -853,7 +910,7 @@ void loadHIVArray_Women()
 {
     
     E(cout << "Lets load the HIV array for women.  " << endl;)
-    ifstream myfile3("/Users/Mikaela/Documents/HIVModel/HIVModel/HIV_incidence_women.csv");
+    ifstream myfile3("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/HIV_incidence_women.csv");
     
     // Lets include an error message in case file is not found
     if (!myfile3.is_open())
@@ -895,7 +952,7 @@ void loadHIVArray_Women()
 void loadHIVArray_Men(){
     
     E(cout << "Lets load the HIV array for men.  " << endl;)
-    ifstream myfile4("/Users/Mikaela/Documents/HIVModel/HIVModel/HIV_incidence_men.csv");
+    ifstream myfile4("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/HIV_incidence_men.csv");
     
     
     // Lets include an error message in case file is not found

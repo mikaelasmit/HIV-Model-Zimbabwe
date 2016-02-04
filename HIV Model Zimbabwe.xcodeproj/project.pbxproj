@@ -50,7 +50,6 @@
 		73BD22281C58F96100BC7AC6 /* Model_params.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Model_params.txt; sourceTree = "<group>"; };
 		73BD22291C58F96100BC7AC6 /* mortality_array_men.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mortality_array_men.csv; sourceTree = "<group>"; };
 		73BD222A1C58F96100BC7AC6 /* mortality_array_women.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mortality_array_women.csv; sourceTree = "<group>"; };
-		73BD222B1C58F96100BC7AC6 /* Original_Raw.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Original_Raw.xlsx; sourceTree = "<group>"; };
 		73BD222C1C58F96100BC7AC6 /* person.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = person.cpp; sourceTree = "<group>"; };
 		73BD222D1C58F96100BC7AC6 /* person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = person.h; sourceTree = "<group>"; };
 		73BD222E1C58F96100BC7AC6 /* Test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Test.txt; sourceTree = "<group>"; };
@@ -105,7 +104,6 @@
 				73BD22281C58F96100BC7AC6 /* Model_params.txt */,
 				73BD22291C58F96100BC7AC6 /* mortality_array_men.csv */,
 				73BD222A1C58F96100BC7AC6 /* mortality_array_women.csv */,
-				73BD222B1C58F96100BC7AC6 /* Original_Raw.xlsx */,
 				73BD222C1C58F96100BC7AC6 /* person.cpp */,
 				73BD222D1C58F96100BC7AC6 /* person.h */,
 				73BD222E1C58F96100BC7AC6 /* Test.txt */,

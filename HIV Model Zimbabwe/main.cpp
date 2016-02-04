@@ -58,7 +58,7 @@ double StartYear=1950;														// Define Start Year if the model and set it
 int EndYear=2030;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
 
 const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled
-int init_pop =500;                                                           // Initial population 1st Jan 1950 as 5910 (see Excel for calculation) - 59100
+int init_pop =2671;                                                           // Initial population 1st Jan 1950 as 2671 (see Excel for calculation - Kenya)
 int total_population=init_pop;												// Update total population for output and for next new entry
 
 priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue so as to be able to push-in/pop-out new events that are ocurreing  as a result of 'primary' events in the queue, e.g. recurrent birthdays
@@ -78,6 +78,22 @@ int main(){
     cout << "We got to section 1 - We are loading the arrays" << endl;
     
     
+    // Load HIV Arrays
+    loadCD4StartArray();
+    loadCD4ProgArray();
+    loadCD4DeathArray();
+    loadCD4ARTArray();
+    
+    
+    // Load Demographic Arrays
+    loadAgeDistribution();
+    loadAgeMin();
+    loadAgeMax();
+    loadNrChildren();
+    loadNrChildrenProb();
+
+    
+    // Load NCD Arrays
     loadNCDAgeArrayMin();
     loadNCDAgeArrayMax();
     loadNCDArray();
@@ -90,24 +106,13 @@ int main(){
     loadHIVArray_Women();
     loadHIVArray_Men();
     
-    // Load Demographic Arrays
-    loadNrChildren();
-    loadAgeDistribution();
-    loadAgeMin();
-    loadAgeMax();
-    
-    // Load Demographic Arrays
-    loadNrChildren();
-    loadAgeDistribution();
-    loadAgeMin();
-    loadAgeMax();
     
     
-    // Load HIV Arrays
-    loadCD4StartArray();
-    loadCD4ProgArray();
-    loadCD4DeathArray();
-    loadCD4ARTArray();
+    
+    
+    
+    
+    
     
     
     cout << "We finished loading the arrays" << endl;
@@ -179,7 +184,7 @@ int main(){
     
     //// --- Output the results in a csv file ---
     FILE* Project1;
-    Project1 = fopen("/Users/Mikaela/Documents/MATLAB/HIV check/Project2.csv","w");
+    Project1 = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
         fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
