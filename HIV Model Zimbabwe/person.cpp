@@ -122,7 +122,7 @@ void person::GenderDistribution(){
     E(cout << "We are assigning gender!" << endl;)
     
     double	r = ((double) rand() / (RAND_MAX)) ;
-    if (r<=0.5014){Sex=1;}									// Where 1 = man and 2= woman
+    if (r<=0.4986){Sex=1;}									// Where 1 = man and 2= woman
     else {Sex=2;}
     
     E(cout << "We finished assigning gender!" << endl;)

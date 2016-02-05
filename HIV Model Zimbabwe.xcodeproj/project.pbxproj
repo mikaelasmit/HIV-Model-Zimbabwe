@@ -31,7 +31,6 @@
 /* Begin PBXFileReference section */
 		73BD220A1C58F87C00BC7AC6 /* HIV Model Zimbabwe */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "HIV Model Zimbabwe"; sourceTree = BUILT_PRODUCTS_DIR; };
 		73BD22151C58F94800BC7AC6 /* CParamReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CParamReader.cpp; sourceTree = "<group>"; };
-		73BD22171C58F96100BC7AC6 /* Copy of Original_Raw2.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Copy of Original_Raw2.xlsx"; sourceTree = "<group>"; };
 		73BD22191C58F96100BC7AC6 /* CParamReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CParamReader.hpp; sourceTree = "<group>"; };
 		73BD221A1C58F96100BC7AC6 /* errorcoutmacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = errorcoutmacro.h; sourceTree = "<group>"; };
 		73BD221B1C58F96100BC7AC6 /* event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = event.cpp; sourceTree = "<group>"; };
@@ -85,7 +84,6 @@
 		73BD220C1C58F87C00BC7AC6 /* HIV Model Zimbabwe */ = {
 			isa = PBXGroup;
 			children = (
-				73BD22171C58F96100BC7AC6 /* Copy of Original_Raw2.xlsx */,
 				73BD22191C58F96100BC7AC6 /* CParamReader.hpp */,
 				73BD221A1C58F96100BC7AC6 /* errorcoutmacro.h */,
 				73BD221B1C58F96100BC7AC6 /* event.cpp */,

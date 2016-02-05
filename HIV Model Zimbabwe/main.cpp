@@ -4,7 +4,6 @@
 //    Copyright (c) 2014 Mikaela Smit. All rights reserved.   //
 ////////////////////////////////////////////////////////////////
 
-
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -24,11 +23,10 @@
 #include <stdlib.h>
 #include <cmath>
 
-
 using namespace std;
 
+
 // TO FIX GENERAL
-// 1. Change population to vector instead of array - need to keep a long long int for count of population, and find way of dealing with array of pointers (too long)
 // 2. Remove all unecessary code - tidy up
 // 3. When person dies, remove all related events, do something about events that should no longer happen
 // 4. Make various event types (people-specific/annual events,...)
@@ -41,13 +39,16 @@ using namespace std;
 // 13. Think about a parameter document - transfer HIV parameter to seperate file
 
 
-
 // TO DO List for HIV:
 // 1. Add HIV status using incidence
 // 2. Add HIV natural history (CD4 count)
 // 3. Change mortality once they have HIV and dependant on CD4 coutn
 // 4. Add more aspects of HIV care cascade (diagnosis, start cART,?)
 // 5. Update HIV knowledge based on HIV test
+
+
+// !!!  IMPORTANT NOTES FOR MODEL !!!
+// 1. Note that the population should be running at 2565 (1/100) for population check and 25650 (1/1000) for HIV check!
 
 
 //// --- Function related to events - to be available externally ---
@@ -58,7 +59,7 @@ double StartYear=1950;														// Define Start Year if the model and set it
 int EndYear=2030;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
 
 const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled
-int init_pop =2671;                                                           // Initial population 1st Jan 1950 as 2671 (see Excel for calculation - Kenya)
+int init_pop =25650;                                                        // Initial population 1st Jan 1950 as 2671 (see Excel for calculation - Kenya)
 int total_population=init_pop;												// Update total population for output and for next new entry
 
 priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue so as to be able to push-in/pop-out new events that are ocurreing  as a result of 'primary' events in the queue, e.g. recurrent birthdays
@@ -105,13 +106,6 @@ int main(){
     loadDeathArray_Men();
     loadHIVArray_Women();
     loadHIVArray_Men();
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -184,7 +178,7 @@ int main(){
     
     //// --- Output the results in a csv file ---
     FILE* Project1;
-    Project1 = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
+    Project1 = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
         fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
