@@ -108,9 +108,7 @@ int main(){
     loadHIVArray_Men();
     
     
-    
     cout << "We finished loading the arrays" << endl;
-    
     
     
     //// Some notification code
@@ -177,10 +175,14 @@ int main(){
     }
     
     //// --- Output the results in a csv file ---
-    FILE* Project1;
-    Project1 = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
+    FILE* ProjectZim;
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
+    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
+    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD parameterisation/ProjectZim.csv","w");
+    
+    
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(Project1,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
+        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -200,10 +202,11 @@ int main(){
                 MyArrayOfPointersToPeople[i]->Osteo,
                 MyArrayOfPointersToPeople[i]->CKD,
                 MyArrayOfPointersToPeople[i]->Stroke
-        
                 
                 );}
-    fclose(Project1);
+    fclose(ProjectZim);
+    //fclose(ProjectZim);
+    //fclose(ProjectZim);
     
     
     //// --- LETS AVOID MEMORY LEAKS AND DELETE ALL NEW EVENTS --- ////
