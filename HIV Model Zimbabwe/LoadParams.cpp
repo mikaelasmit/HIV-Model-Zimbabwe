@@ -43,7 +43,7 @@ int*      ArrayMax;
 // NCD Arrays
 int*      NCDAgeArrayMin;
 int*      NCDAgeArrayMax;
-double*** NCDArray;
+double**  NCDArray;
 int nr_NCDs;
 
 
@@ -680,7 +680,7 @@ void loadNCDAgeArrayMax()
     int col=nr_columns;
     
     
-    // Lets make the *** Array
+    // Lets make the * Array
     NCDAgeArrayMax= new int [col];
     
     for (int i=0; i<col; i++){
@@ -720,9 +720,9 @@ void loadNCDArray()
     // Lets load the data
     char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
     //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
-    int nr_Conditions=nr_rows/2;
+    int nr_Conditions=nr_rows;
     nr_NCDs=nr_Conditions;
-    //cout <<nr_NCDs << endl;
+    cout <<nr_NCDs << endl;
     
     
     // Lets convert to an array
@@ -733,29 +733,26 @@ void loadNCDArray()
     
     
     // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
-    int levels=2;
-    int row=nr_rows/2;
+    int row=nr_rows;
     int col=nr_columns;
     
     
     // Lets make the *** Array
-    NCDArray = new double **[levels];
-    for (int i=0; i<levels; i++)
-    {NCDArray[i] = new double *[row];}
-    for (int i=0; i<levels; i++)
-    {for (int j=0; j<row; j++)
-    {NCDArray[i][j] = new double [col];}}
+    NCDArray = new double *[row];
+    for (int i=0; i<row; i++)
+    {
+        NCDArray[i] = new double [col];
+    }
     
-    for (int l=0; l<levels; l++){
-        for (int j=0; j<row; j++){
-            for (int i=0; i<col; i++){
-                int NElement=i+(j*col)+(l*row*col);
-                NCDArray[l][j][i]=data[NElement];
-                //cout << "L: " << l << " J: " << j << " and i: " << i << endl;
-                //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NCDArray " << NCDArray[l][j][i] << endl;
-            }
+    for (int j=0; j<row; j++){
+        for (int i=0; i<col; i++){
+            int NElement=i+(j*col);
+            NCDArray[j][i]=data[NElement];
+            //cout << " J: " << j << " and i: " << i << endl;
+            //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NCDArray " << NCDArray[j][i] << endl;
         }
     }
+
     
     E(cout<< "The NCDArray Parameter has been loaded" << endl;)
 }

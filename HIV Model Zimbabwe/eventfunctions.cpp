@@ -36,7 +36,7 @@ extern double**  CD4_prog_rates;
 extern double*** Death_CD4_rates;
 extern double*** ART_CD4_rates;
 
-extern double*** NCDArray;
+extern double**  NCDArray;
 extern int*      NCDAgeArrayMin;
 extern int*      NCDAgeArrayMax;
 
@@ -369,8 +369,38 @@ void EventCD4change(person *MyPointerToPerson){
 }
 	
 
+//////// NCD EVENTS //////
 
-void EventMyDiabetesDate(person *MyPointerToPerson){
+void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed hypertension!" << endl;)
+    MyPointerToPerson->HT_status=1;
+}
+
+void EventMyDepressionDate(person *MyPointerToPerson)		// Function executed when person develops depression
+{
+    E(cout << endl << endl << "This patient just developed depression!" << endl;)
+    MyPointerToPerson->Depression_status=1;
+}
+
+void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when person develops asthma
+{
+    E(cout << endl << endl << "This patient just developed asthma!" << endl;)
+    MyPointerToPerson->Asthma_status=1;
+}
+
+void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    E(cout << endl << endl << "This patient just developed stroke!" << endl;)
+    MyPointerToPerson->Stroke_status=1;
+}
+
+void EventMyDiabetesDate(person *MyPointerToPerson)        // Function executed when person develops diabetes
+{
+    E(cout << endl << endl << "This patient just developed diabetes!" << endl;)
+    MyPointerToPerson->Diabetes_status=1;
+}
+/*void EventMyDiabetesDate(person *MyPointerToPerson){
     
     E(cout << "I just developed Diabetes, lets see if I am at an increased risk of other NCDs!" << endl;)
     
@@ -389,7 +419,8 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
     
         int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCDs, but we may use more, less in the future
         int max_nr=1;
-        while (max_nr>NCDArray[0][0][max_index]){max_index++;}
+        while (max_nr>NCDArray[0][max_index]){max_index++;}
+        cout << "MAx index: " << max_index << endl;
 
         
     
@@ -708,6 +739,9 @@ void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when pe
     E(cout << endl << endl << "Hypercholesterolaemia has developed and addition risks evaluated!" << endl;)
 }
 
+
+
+
 void EventMyMaligDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     E(cout << endl << endl << "This patient just developed cancer!" << endl;)
@@ -735,10 +769,4 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
 {
     E(cout << endl << endl << "This patient just developed Stroke!" << endl;)
     MyPointerToPerson->Stroke=1;
-}
-
-
-
-
-
-
+}*/

@@ -40,9 +40,18 @@ public:
     int CD4_cat;
     int ART;
     
+    double HT;
+    int HT_status;
+    double Depression;
+    int Depression_status;
+    double Asthma;
+    int Asthma_status;
+    double Stroke;
+    int Stroke_status;
     double Diabetes;
     int Diabetes_status;
-    double HC;
+    
+    /*double HC;
     int HC_status;
     double HT;
     int HT_status;
@@ -53,9 +62,8 @@ public:
     double Osteo;
     int Osteo_status;
     double CKD;
-    int CKD_status;
-    double Stroke;
-    int Stroke_status;
+    int CKD_status;*/
+    
     vector<double> NCD_DatesVector;
     
     

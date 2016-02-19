@@ -177,12 +177,12 @@ int main(){
     //// --- Output the results in a csv file ---
     FILE* ProjectZim;
     ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
-    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD parameterisation/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f \n",
+        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -194,14 +194,11 @@ int main(){
                 MyArrayOfPointersToPeople[i]->HIV,
                 MyArrayOfPointersToPeople[i]->CD4_cat,
                 MyArrayOfPointersToPeople[i]->ART,
-                MyArrayOfPointersToPeople[i]->Diabetes,
-                MyArrayOfPointersToPeople[i]->HC,
                 MyArrayOfPointersToPeople[i]->HT,
-                MyArrayOfPointersToPeople[i]->Malig,
-                MyArrayOfPointersToPeople[i]->MI,
-                MyArrayOfPointersToPeople[i]->Osteo,
-                MyArrayOfPointersToPeople[i]->CKD,
-                MyArrayOfPointersToPeople[i]->Stroke
+                MyArrayOfPointersToPeople[i]->Depression,
+                MyArrayOfPointersToPeople[i]->Asthma,
+                MyArrayOfPointersToPeople[i]->Stroke,
+                MyArrayOfPointersToPeople[i]->Diabetes
                 
                 );}
     fclose(ProjectZim);
