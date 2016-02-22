@@ -36,12 +36,12 @@ extern double** HIVArray_Women;
 extern double** HIVArray_Men;
 
 extern double** NrChildrenArray;
-extern double* NrChildrenProb;
+extern double*  NrChildrenProb;
 extern double** Age1950Array;
 extern int*     ArrayMin;
 extern int*     ArrayMax;
 
-extern double**  NCDArray;
+extern double**  NCDArrayL;
 extern int*      NCDAgeArrayMin;
 extern int*      NCDAgeArrayMax;
 
@@ -383,67 +383,43 @@ void person::GetMyDateNCD(){
     
     // Some basic code and finding index for not getting NCDs
     int ncd=0;                                                  // Assisgn all the possible NCDs in this code
-    double Date_NCD=-998;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+    double DateNCD=-997;
     
-    int max_index=0;                                            // This is to make it automatic.  We currently use 6 age groups for NCds, but we may use more, less in the future
-    int max_nr=1;
-    while (max_nr>NCDArray[0][max_index]){max_index++;}
-    //cout << "Max index: " << max_index << endl;
-    //cout << "NUmber of NCDs:" << nr_NCDs << endl;
+    //cout << "NCD for patient nr: " << PersonID << " with DOB: " << DoB << endl;
     
     // Lets get the dates for the NCDs
     while (ncd<nr_NCDs){
+        double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+        //cout << "NCD: " << ncd << " R: " << r << endl;
 
         
-        int incidence_check=0;
-        int NCD_YES=0;
-        int i=0;
-        double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
-        //cout << "r: " << r << " incidence check: " << incidence_check << endl;
-        
-        // To see if they get NCD, need to evaluate first between 18-49, if not at that age then btw 50-59 etc
-        while (incidence_check<max_index && NCD_YES==0)
+        if (r>NCDArrayL[ncd][120])                               // If they DO NOT get an NCD set date to -998
         {
-            if (r<=NCDArray[ncd][incidence_check])
-                {
-                    NCD_YES=1;
-                }
+            if      (ncd==0)    {HT=-998;}
+            else if (ncd==1)    {Depression=-998;}
+            else if (ncd==2)    {Asthma=-998;}
+            else if (ncd==3)    {Stroke=-998;}
+            else if (ncd==4)    {Diabetes=-998;}
+        }
+        
+        
+        if (r<=NCDArrayL[ncd][120])                              // If they will get and NCD lets get the age and date
+        {
+            // Lets get the index for age at NCD
+            int i=0;
+            while (r>NCDArrayL[ncd][i]){i++;}
             
-            if (r>NCDArray[ncd][incidence_check])
-            {
-                r = ((double) rand() / (RAND_MAX));             // Need to get a new random number because otherwise nearly always will happen in younger age group ("new risk" given not having been ill yet)
-                //cout << "r: " << r << endl;
-                incidence_check++;
-                i++;
-            }
-            //cout << "I: " << i << " NCD_YES: " << NCD_YES << " incidence check: " << incidence_check << endl;
-        }
-        
-        
-        if (NCDArray[ncd][i]==1)                         // If they DO NOT get an NCD set date to -998
-        {
-            if      (ncd==0)    {HT=Date_NCD;}
-            else if (ncd==1)    {Depression=Date_NCD;}
-            else if (ncd==2)    {Asthma=Date_NCD;}
-            else if (ncd==3)    {Stroke=Date_NCD;}
-            else if (ncd==4)    {Diabetes=Date_NCD;}
-        }
-        
-        
-        if (NCDArray[ncd][i]<1)                          // If they will get and NCD lets get the age and date
-        {
+            //cout << "R: " << r << " I: " << i << endl;
             
             // Lets get the age and date they will have the NCD
-            //cout << "MIn and MAx age: " << NCDAgeArrayMin[i] << " and " << NCDAgeArrayMax[i] << endl;
-            double Age_NCD = RandomMinMax(NCDAgeArrayMin[i],NCDAgeArrayMax[i]);     // Lets get the age they will develop the NCD
             double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
-            Age_NCD=Age_NCD+YearFraction;
-            double Date_NCD=DoB+Age_NCD;
+            DateNCD=DoB+i+YearFraction;
+            //cout << "Age at NCD: " << DateNCD << endl;
             
             
             if (ncd==0)
             {
-                HT=Date_NCD;
+                HT=DateNCD;
                 //cout << "My date for HT is: " << HT << endl;
                 //// --- Lets feed Hypertension into the eventQ --- ////
                 if (HT>=*p_GT && HT<EndYear){
@@ -460,7 +436,7 @@ void person::GetMyDateNCD(){
             
             else if (ncd==1)
             {
-                Depression=Date_NCD;
+                Depression=DateNCD;
                 //cout << "My date for HC is: " << HC << endl;
                 //// --- Lets feed Hypercholesterolaemia into the eventQ --- ////
                 if (Depression>=*p_GT && Depression<EndYear){
@@ -477,7 +453,7 @@ void person::GetMyDateNCD(){
             
             else if (ncd==2)
             {
-                Asthma=Date_NCD;
+                Asthma=DateNCD;
                 //cout << "My date for HT is: " << HT << endl;
                 //// --- Lets feed Hypertension into the eventQ --- ////
                 if (Asthma>=*p_GT && Asthma<EndYear){
@@ -493,7 +469,7 @@ void person::GetMyDateNCD(){
             
             else if (ncd==3)
             {
-                Stroke=Date_NCD;
+                Stroke=DateNCD;
                 //cout << "My date for Stroke is: " << Stroke << endl;
                 //// --- Lets feed Stroke into the eventQ --- ////
                 if (Stroke>=*p_GT && Stroke<EndYear){
@@ -510,7 +486,7 @@ void person::GetMyDateNCD(){
             
             else if (ncd==4)
             {
-                Diabetes=Date_NCD;
+                Diabetes=DateNCD;
                 //cout << "My date for MI is: " << MI << endl;
                 //// --- Lets feed MI into the eventQ --- ////
                 if (Diabetes>=*p_GT && Diabetes<EndYear){
@@ -526,10 +502,10 @@ void person::GetMyDateNCD(){
         
         }
        
-        NCD_DatesVector.push_back(Date_NCD);
+        NCD_DatesVector.push_back(DateNCD);
         ncd++;                                                                      // Lets do the next NCD
     }
-    
+ 
     E(cout << "We finished assigning NCDs!" << endl;)
 }
 

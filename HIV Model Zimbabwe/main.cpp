@@ -95,9 +95,10 @@ int main(){
 
     
     // Load NCD Arrays
-    loadNCDAgeArrayMin();
-    loadNCDAgeArrayMax();
-    loadNCDArray();
+    //loadNCDAgeArrayMin();
+    //loadNCDAgeArrayMax();
+    //loadNCDArray();
+    loadNCDArrayL();
     
     
     // Load Large Arrays

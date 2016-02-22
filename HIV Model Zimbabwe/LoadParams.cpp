@@ -26,6 +26,7 @@ double** DeathArray_Women;
 double** DeathArray_Men;
 double** HIVArray_Women;
 double** HIVArray_Men;
+double** NCDArrayL;
 
 // HIV Arrays
 double*** CD4_startarray;
@@ -41,10 +42,10 @@ int*      ArrayMin;
 int*      ArrayMax;
 
 // NCD Arrays
-int*      NCDAgeArrayMin;
-int*      NCDAgeArrayMax;
-double**  NCDArray;
-int nr_NCDs;
+//int*      NCDAgeArrayMin;
+//int*      NCDAgeArrayMax;
+//double**  NCDArray;
+int nr_NCDs=5;                                         // Change this as you need to
 
 
 //// --- Load parameters --- ////
@@ -587,7 +588,7 @@ void loadAgeMax()
 
 
 
-void loadNCDAgeArrayMin()
+/*void loadNCDAgeArrayMin()
 {
     E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
     
@@ -757,7 +758,7 @@ void loadNCDArray()
     E(cout<< "The NCDArray Parameter has been loaded" << endl;)
 }
 
-
+*/
 
 
 
@@ -768,6 +769,54 @@ void loadNCDArray()
 ///////////////////////////////////////
 /////// --- LOAD KEY ARRAYS --- ///////
 ///////////////////////////////////////
+
+
+
+
+///////////////////////////
+// -- NCD Array -- //
+///////////////////////////
+
+void loadNCDArrayL(){
+    
+    E(cout << "Lets load the NCD array. " << endl;)
+    ifstream myfile("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/NCDArray.csv");
+    
+    
+    // Lets include an error message in case file is not found
+    if (!myfile.is_open())
+    {
+        cout << "ERROR: The file NCDArray was not found!" << endl;
+        exit(0);
+    }
+    else if (myfile.bad())
+    {
+        cout << "ERROR: The file NCDArray was bad!" << endl;
+        exit(0);
+    }
+    
+    // Else lets load the Array
+    E(cout << "File " << &myfile << " successfully added" << endl;)
+    NCDArrayL = new double *[5];
+    for (int row = 0; row<5; row++){				// This loop will read in every number to the right place
+        string line;
+        getline(myfile, line);
+        stringstream iss(line);
+        
+        
+        NCDArrayL[row]=new double[121];
+        for (int col = 0; col<121; col++){
+            string val;
+            getline (iss, val, ',');
+            stringstream convertor(val);
+            convertor >>  NCDArrayL[row][col];
+        }
+    }
+    
+    
+    E(cout << "NCDArray array has been read in successfully! " << endl;)
+}
+
 
 
 ///////////////////////////
