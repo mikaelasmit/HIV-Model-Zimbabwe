@@ -26,7 +26,7 @@ double** DeathArray_Women;
 double** DeathArray_Men;
 double** HIVArray_Women;
 double** HIVArray_Men;
-double** NCDArrayL;
+double** NCDArray;
 
 // HIV Arrays
 double*** CD4_startarray;
@@ -42,8 +42,8 @@ int*      ArrayMin;
 int*      ArrayMax;
 
 // NCD Arrays
-//int*      NCDAgeArrayMin;
-//int*      NCDAgeArrayMax;
+int*      NCDAgeArrayMin;
+int*      NCDAgeArrayMax;
 //double**  NCDArray;
 int nr_NCDs=5;                                         // Change this as you need to
 
@@ -588,7 +588,7 @@ void loadAgeMax()
 
 
 
-/*void loadNCDAgeArrayMin()
+void loadNCDAgeArrayMin()
 {
     E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
     
@@ -694,7 +694,7 @@ void loadNCDAgeArrayMax()
 
 
 
-void loadNCDArray()
+/*void loadNCDArray()
 {
     E(cout<< "The NCDArray Parameter is being loaded" << endl;)
     
@@ -777,7 +777,7 @@ void loadNCDArray()
 // -- NCD Array -- //
 ///////////////////////////
 
-void loadNCDArrayL(){
+void loadNCDArray(){
     
     E(cout << "Lets load the NCD array. " << endl;)
     ifstream myfile("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/NCDArray.csv");
@@ -797,19 +797,19 @@ void loadNCDArrayL(){
     
     // Else lets load the Array
     E(cout << "File " << &myfile << " successfully added" << endl;)
-    NCDArrayL = new double *[5];
+    NCDArray = new double *[5];
     for (int row = 0; row<5; row++){				// This loop will read in every number to the right place
         string line;
         getline(myfile, line);
         stringstream iss(line);
         
         
-        NCDArrayL[row]=new double[121];
+        NCDArray[row]=new double[121];
         for (int col = 0; col<121; col++){
             string val;
             getline (iss, val, ',');
             stringstream convertor(val);
-            convertor >>  NCDArrayL[row][col];
+            convertor >>  NCDArray[row][col];
         }
     }
     

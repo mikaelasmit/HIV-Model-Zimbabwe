@@ -46,7 +46,6 @@
 		73BD22251C58F96100BC7AC6 /* LoadParams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoadParams.cpp; sourceTree = "<group>"; };
 		73BD22261C58F96100BC7AC6 /* LoadParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadParams.h; sourceTree = "<group>"; };
 		73BD22271C58F96100BC7AC6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		73BD22281C58F96100BC7AC6 /* Model_params.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Model_params.txt; sourceTree = "<group>"; };
 		73BD22291C58F96100BC7AC6 /* mortality_array_men.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mortality_array_men.csv; sourceTree = "<group>"; };
 		73BD222A1C58F96100BC7AC6 /* mortality_array_women.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mortality_array_women.csv; sourceTree = "<group>"; };
 		73BD222C1C58F96100BC7AC6 /* person.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = person.cpp; sourceTree = "<group>"; };
@@ -84,6 +83,7 @@
 		73BD220C1C58F87C00BC7AC6 /* HIV Model Zimbabwe */ = {
 			isa = PBXGroup;
 			children = (
+				73BD22151C58F94800BC7AC6 /* CParamReader.cpp */,
 				73BD22191C58F96100BC7AC6 /* CParamReader.hpp */,
 				73BD221A1C58F96100BC7AC6 /* errorcoutmacro.h */,
 				73BD221B1C58F96100BC7AC6 /* event.cpp */,
@@ -99,13 +99,11 @@
 				73BD22251C58F96100BC7AC6 /* LoadParams.cpp */,
 				73BD22261C58F96100BC7AC6 /* LoadParams.h */,
 				73BD22271C58F96100BC7AC6 /* main.cpp */,
-				73BD22281C58F96100BC7AC6 /* Model_params.txt */,
 				73BD22291C58F96100BC7AC6 /* mortality_array_men.csv */,
 				73BD222A1C58F96100BC7AC6 /* mortality_array_women.csv */,
 				73BD222C1C58F96100BC7AC6 /* person.cpp */,
 				73BD222D1C58F96100BC7AC6 /* person.h */,
 				73BD222E1C58F96100BC7AC6 /* Test.txt */,
-				73BD22151C58F94800BC7AC6 /* CParamReader.cpp */,
 			);
 			path = "HIV Model Zimbabwe";
 			sourceTree = "<group>";

@@ -18,32 +18,31 @@
 
 
 //// --- OUTSIDE INFORMATION --- ////
-extern double *p_GT;									// Tell this .cpp that there is pointer to Global Time defined externally
-extern double StartYear;								// Include Start Year so only have to change it once in main()
-extern int EndYear;										// Include endyear so that we can avoid putting unnecessary items into EventQ
-extern int *p_PY;										// Pointer to show which year range we are on
-extern priority_queue<event*, vector<event*>, timeComparison> *p_PQ;	// Tell this .cpp that there is a priorty_queue externall and define pointer to it
-extern vector<event*> Events;
-extern person** MyArrayOfPointersToPeople;				// Pointer to MyArrayOfPointersToPeople
-extern int       nr_NCDs;
+extern double   *p_GT;									// Tell this .cpp that there is pointer to Global Time defined externally
+extern double   StartYear;								// Include Start Year so only have to change it once in main()
+extern int      EndYear;								// Include endyear so that we can avoid putting unnecessary items into EventQ
+extern int      *p_PY;									// Pointer to show which year range we are on
+extern          person** MyArrayOfPointersToPeople;		// Pointer to MyArrayOfPointersToPeople
+extern int      nr_NCDs;
+extern          priority_queue<event*, vector<event*>, timeComparison> *p_PQ;
+extern          vector<event*> Events;
 
 
-//// --- Pointers to external arrays --- ////
-extern double** BirthArray;									// This  is a pointer to an array!! i.e pointer to pointer :)
+
+//// --- POINTERS TO EXTERNAL ARRAYS --- ////
+extern double** BirthArray;							 	// This  is a pointer to an array!! i.e pointer to pointer :)
 extern double** DeathArray_Women;
 extern double** DeathArray_Men;
 extern double** HIVArray_Women;
 extern double** HIVArray_Men;
-
 extern double** NrChildrenArray;
 extern double*  NrChildrenProb;
 extern double** Age1950Array;
 extern int*     ArrayMin;
 extern int*     ArrayMax;
-
-extern double**  NCDArrayL;
-extern int*      NCDAgeArrayMin;
-extern int*      NCDAgeArrayMax;
+extern double** NCDArray;
+extern int*     NCDAgeArrayMin;
+extern int*     NCDAgeArrayMax;
 
 
 
@@ -51,12 +50,10 @@ extern int*      NCDAgeArrayMax;
 vector <float> HIVReservoir(0);
 
 int RandomMinMax(int min, int max){							// Provide function for random number generator between min and max number
-    return rand()%(max-min+1)+min;							// !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
-}
+    return rand()%(max-min+1)+min;}							// !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
 
 int RandomLONGMinMax(long int min, long int max){			// Provide function for random number generator between min and max number
-    return rand()%(max-min+1)+min;							// !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
-}
+    return rand()%(max-min+1)+min;}							// !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
 
 
 //// --- CLASS (POPULATION) CONSTRUCTOR --- ////
@@ -82,31 +79,26 @@ person::person()											// First 'person' class second constructor/variable a
     CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
     ART=-999;												// Where HIV and ART 0=No and 1=Yes
     
-    HT=-999;                                          // --- Variables related to NCDs ---
+    HT=-999;                                                // --- Variables related to NCDs ---
     Depression=-999;
     Asthma=-999;
     Stroke=-999;
     Diabetes=-999;
-    
-    
     HT_status=0;
     Depression_status=0;
     Asthma_status=0;
     Stroke_status=0;
     Diabetes_status=0;
-    
     NCD_DatesVector.resize(0);
     
 }
-
-
-//// --- FUNCTION TO ASSIGN CHARACTERISTIC FOR INITIAL POPULATION --- ////
 
 
 
 // --- Assign Person ID ---
 void person::PersonIDAssign(int x){
     PersonID=x+1;
+    
     E(cout<< "PersonID: " << PersonID<< endl;)
 }
 
@@ -159,8 +151,6 @@ void person::GetDateOfBaby(){								// This method already calculates the child
         if (r_nr<NrChildrenProb[index]){NrChildren=NrChildrenArray[0][index];}
         if (r_nr>=NrChildrenProb[index]){NrChildren=NrChildrenArray[1][index];}
         
-        //cout << "R_nr: " << r_nr << " Number of Children: " << NrChildren << " Cut off: " << NrChildrenProb[index] << " index: " << index << endl;
-        
         
         //// --- Lets see when I will having all my children --- ////
         // The csv files are loaded elsewhere
@@ -192,7 +182,6 @@ void person::GetDateOfBaby(){								// This method already calculates the child
             };
             
             if (j>=34){
-            //cout << "F: " << f << " Index: " << index << " J: " << j << endl;
             }
             
             DatesBirth.push_back(DateOfBirthTest);			// Once we checked birth doesn't happen before birth lets push that in
@@ -381,19 +370,21 @@ void person::GetMyDateNCD(){
     
     E(cout << endl << endl << "We are assigning NCDs!" << endl;)
     
+    double age_at_death=DateOfDeath-DoB;
+
+    if (age_at_death>18)
+    {
+    
     // Some basic code and finding index for not getting NCDs
     int ncd=0;                                                  // Assisgn all the possible NCDs in this code
     double DateNCD=-997;
-    
-    //cout << "NCD for patient nr: " << PersonID << " with DOB: " << DoB << endl;
+
     
     // Lets get the dates for the NCDs
     while (ncd<nr_NCDs){
         double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
-        //cout << "NCD: " << ncd << " R: " << r << endl;
-
         
-        if (r>NCDArrayL[ncd][120])                               // If they DO NOT get an NCD set date to -998
+        if (r>NCDArray[ncd][120])                               // If they DO NOT get an NCD set date to -998
         {
             if      (ncd==0)    {HT=-998;}
             else if (ncd==1)    {Depression=-998;}
@@ -403,24 +394,33 @@ void person::GetMyDateNCD(){
         }
         
         
-        if (r<=NCDArrayL[ncd][120])                              // If they will get and NCD lets get the age and date
+        if (r<=NCDArray[ncd][120])                              // If they will get and NCD lets get the age and date
         {
             // Lets get the index for age at NCD
             int i=0;
-            while (r>NCDArrayL[ncd][i]){i++;}
-            
-            //cout << "R: " << r << " I: " << i << endl;
+            while (r>NCDArray[ncd][i]){i++;}
             
             // Lets get the age and date they will have the NCD
             double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
             DateNCD=DoB+i+YearFraction;
-            //cout << "Age at NCD: " << DateNCD << endl;
+            
+            if (DateNCD>DateOfDeath && i<50)
+            {
+                while (DateNCD>DateOfDeath)
+                {
+                    double Age_NCD = RandomMinMax(NCDAgeArrayMin[0],NCDAgeArrayMax[0]);     // Lets get the age they will develop the NCD
+                    double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                    Age_NCD=Age_NCD+YearFraction;
+                    DateNCD=DoB+Age_NCD;
+                }
+                
+            }
+            
             
             
             if (ncd==0)
             {
                 HT=DateNCD;
-                //cout << "My date for HT is: " << HT << endl;
                 //// --- Lets feed Hypertension into the eventQ --- ////
                 if (HT>=*p_GT && HT<EndYear){
                     int p=PersonID-1;
@@ -437,7 +437,6 @@ void person::GetMyDateNCD(){
             else if (ncd==1)
             {
                 Depression=DateNCD;
-                //cout << "My date for HC is: " << HC << endl;
                 //// --- Lets feed Hypercholesterolaemia into the eventQ --- ////
                 if (Depression>=*p_GT && Depression<EndYear){
                     int p=PersonID-1;
@@ -454,7 +453,6 @@ void person::GetMyDateNCD(){
             else if (ncd==2)
             {
                 Asthma=DateNCD;
-                //cout << "My date for HT is: " << HT << endl;
                 //// --- Lets feed Hypertension into the eventQ --- ////
                 if (Asthma>=*p_GT && Asthma<EndYear){
                     int p=PersonID-1;
@@ -470,7 +468,6 @@ void person::GetMyDateNCD(){
             else if (ncd==3)
             {
                 Stroke=DateNCD;
-                //cout << "My date for Stroke is: " << Stroke << endl;
                 //// --- Lets feed Stroke into the eventQ --- ////
                 if (Stroke>=*p_GT && Stroke<EndYear){
                     int p=PersonID-1;
@@ -487,7 +484,6 @@ void person::GetMyDateNCD(){
             else if (ncd==4)
             {
                 Diabetes=DateNCD;
-                //cout << "My date for MI is: " << MI << endl;
                 //// --- Lets feed MI into the eventQ --- ////
                 if (Diabetes>=*p_GT && Diabetes<EndYear){
                     int p=PersonID-1;
@@ -505,7 +501,7 @@ void person::GetMyDateNCD(){
         NCD_DatesVector.push_back(DateNCD);
         ncd++;                                                                      // Lets do the next NCD
     }
- 
+    }
     E(cout << "We finished assigning NCDs!" << endl;)
 }
 
