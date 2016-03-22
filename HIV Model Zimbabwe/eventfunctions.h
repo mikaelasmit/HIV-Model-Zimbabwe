@@ -31,4 +31,8 @@ using namespace std;
     void EventMyStrokeDate(person *MyPointerToPerson);			// Function executed when person develops hypertension
     void EventMyDiabetesDate(person *MyPointerToPerson);        // Function executed when person develops diabetes
 
+    void EventMyCKDDate(person *MyPointerToPerson);               // Function executed when person develops CKD
+
+
+
   

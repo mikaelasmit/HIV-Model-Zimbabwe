@@ -63,13 +63,16 @@ int EndYear=2030;															// If endyear is more than 2010, some things wil
 
 
 const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled - Have to now change [init_pop] to [final_number_people] to give the final size of 'matrix'
-int init_pop =2565;                                                        // Initial population 1st Jan 1950 as 2,675 (x thousands) or 26,750 (x hundred) (see Excel for calculation - Kenya)
+int UN_ZimPop=2565000;
+int init_pop =UN_ZimPop/100;                                                // Initial population 1st Jan 1950 as 2,675 (x thousands) or 26,750 (x hundred) (see Excel for calculation - Zimbabwe)
 int total_population=init_pop;												// Update total population for output and for next new entry
 
 
 priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue so as to be able to push-in/pop-out new events that are ocurreing  as a result of 'primary' events in the queue, e.g. recurrent birthdays
 person** MyArrayOfPointersToPeople = new person*[final_number_people];		// First 'person*' is a pointer (address) and 'new person' and space for x person which will point to actual person below
 vector<event *> Events;
+
+int ART_start_yr=2004;
 
 
 
@@ -176,12 +179,12 @@ int main(){
     //// --- Output the results in a csv file --- ////
     FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
+    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-            fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f \n",
+            fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -197,7 +200,17 @@ int main(){
                 MyArrayOfPointersToPeople[i]->Depression,
                 MyArrayOfPointersToPeople[i]->Asthma,
                 MyArrayOfPointersToPeople[i]->Stroke,
-                MyArrayOfPointersToPeople[i]->Diabetes
+                MyArrayOfPointersToPeople[i]->Diabetes,
+                MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart,
+                MyArrayOfPointersToPeople[i]->CD4_change.at(0),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(1),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(2),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(3),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(4),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(5),
+                MyArrayOfPointersToPeople[i]->CD4_change.at(6),
+                MyArrayOfPointersToPeople[i]->CauseOfDeath
+                    
                 
                 );}
     fclose(ProjectZim);

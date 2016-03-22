@@ -71,12 +71,15 @@ person::person()											// First 'person' class second constructor/variable a
     DatesBirth.resize(0);									// This will be used to push in all births of every child
     
     DateOfDeath=9999;										// --- Varibles related to death ---
+    CauseOfDeath=-999;                                      // 0=other, 1=HIV, 2=HT, 3=depressopm, 4=Asthma, 5=Stroke, 6=Diabetes, 7=CKD
     AgeAtDeath=-999;										// NOTE: VERY IMPORTANT this number needs to be HIGH as it entres EventQ
     Alive=-999;												// Variable to update eventQ - global check to see if person is still alive
     
     HIV=-999;												// --- Variables related to HIV-infection ---
     CD4_cat_start=-999;
+    CD4_cat_ARTstart=-999;
     CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
+    CD4_change.resize(7);
     ART=-999;												// Where HIV and ART 0=No and 1=Yes
     
     HT=-999;                                                // --- Variables related to NCDs ---
@@ -84,11 +87,13 @@ person::person()											// First 'person' class second constructor/variable a
     Asthma=-999;
     Stroke=-999;
     Diabetes=-999;
+    CKD=-999;
     HT_status=0;
     Depression_status=0;
     Asthma_status=0;
     Stroke_status=0;
     Diabetes_status=0;
+    CKD_status=0;
     NCD_DatesVector.resize(0);
     
 }
@@ -272,6 +277,9 @@ void person::GetDateOfDeath(){								// This is done by assigning life expactan
         DeathEvent->p_fun = &EventMyDeathDate;
         DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
         p_PQ->push(DeathEvent);
+        
+        // Update cause of death
+        CauseOfDeath=0;
     }
     
     E(cout << "We have finished assigning death dates!" << endl;)
@@ -384,6 +392,7 @@ void person::GetMyDateNCD(){
     while (ncd<nr_NCDs){
         double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
         
+        
         if (r>NCDArray[ncd][120])                               // If they DO NOT get an NCD set date to -998
         {
             if      (ncd==0)    {HT=-998;}
@@ -391,11 +400,14 @@ void person::GetMyDateNCD(){
             else if (ncd==2)    {Asthma=-998;}
             else if (ncd==3)    {Stroke=-998;}
             else if (ncd==4)    {Diabetes=-998;}
+            else if (ncd==5)    {CKD=-998;}
         }
         
         
-        if (r<=NCDArray[ncd][120])                              // If they will get and NCD lets get the age and date
+        if (r<=NCDArray[ncd][120])                              // If they will get and NCD lets get the age and date and also update mortality
         {
+            
+            
             // Lets get the index for age at NCD
             int i=0;
             while (r>NCDArray[ncd][i]){i++;}
@@ -495,6 +507,22 @@ void person::GetMyDateNCD(){
                     p_PQ->push(DiabetesEvent);
                 }
             }
+            
+            else if (ncd==5)
+            {
+                CKD=DateNCD;
+                //// --- Lets feed MI into the eventQ --- ////
+                if (CKD>=*p_GT && CKD<EndYear){
+                    int p=PersonID-1;
+                    event * CKDEvent = new event;
+                    Events.push_back(CKDEvent);
+                    CKDEvent->time = CKD;
+                    CKDEvent->p_fun = &EventMyCKDDate;
+                    CKDEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(CKDEvent);
+                }
+            }
+
         
         }
        

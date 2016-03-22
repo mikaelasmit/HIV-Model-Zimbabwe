@@ -30,6 +30,7 @@ extern int total_population;												// Update total population for output an
 extern person** MyArrayOfPointersToPeople;									// Pointer to MyArrayOfPointersToPeople
 extern int *p_PY;															// Pointer to show which year range we are on
 extern vector<event*> Events;
+extern int ART_start_yr;
 
 extern double*** CD4_startarray;
 extern double**  CD4_prog_rates;
@@ -39,6 +40,9 @@ extern double*** ART_CD4_rates;
 extern double**  NCDArray;
 extern int*      NCDAgeArrayMin;
 extern int*      NCDAgeArrayMax;
+
+extern double** DeathArray_Women;
+extern double** DeathArray_Men;
 
 
 //// --- Important Internal informtaion --- ////
@@ -190,6 +194,8 @@ void EventMyHIVInfection(person *MyPointerToPerson){
 	
 		MyPointerToPerson->CD4_cat=0+j;											// CD4 count cat (variable over time)
 		MyPointerToPerson->CD4_cat_start=0+j;									// CD4 count cat at start (to keep in records)
+        MyPointerToPerson->CD4_change.at(MyPointerToPerson->CD4_cat)=*p_GT;
+        //cout << "Date of CD4: " <<MyPointerToPerson->CD4_change.at(MyPointerToPerson->CD4_cat_start) << endl;
 
 	
 		//// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
@@ -197,12 +203,7 @@ void EventMyHIVInfection(person *MyPointerToPerson){
         double FindCD4_rate = CD4_prog_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
         double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
         
-        
-        // Lets see when ART would start
-        double ART_test = 0;
-        double art = ((double)rand() / (RAND_MAX));
-        ART_test = (-1/FindART_CD4_rate) * log(art);
-        
+    
         
         // Lets see when CD4 count progression would start
         double CD4_test = 0;
@@ -210,14 +211,105 @@ void EventMyHIVInfection(person *MyPointerToPerson){
         CD4_test = (-1/FindCD4_rate) * log(cd4);
         
         
+        
         // Lets see when death would happen
         double death_test = 0;
         double dd = ((double)rand() / (RAND_MAX));
         death_test = (-1/FindDeath_CD4_rate) * log(dd);
         
+        
+        
+        // Lets see if ART should start
+        if (*p_GT>=ART_start_yr){
+            
+            // First lets see if they would start ART now
+            
+            // To do so we first need to find year ref for ART data arrays
+            int p_cov=floor(*p_GT)-ART_start_yr;
+            if (*p_GT>2015){p_cov=11;}
+            
+            if (p_cov>11){
+                cout << "GT: " << *p_GT << " p_cov: " << p_cov << endl;
+            }
+            
+            // Lets check if they start ART
+            if (MyPointerToPerson->Age<=1.5){
+                
+                float ART_coverage[11]={0.00435, 0.01024, 0.03817, 0.05674, 0.08456, 0.12762, 0.19595, 0.23988, 0.29309, 0.29978, 0.37502};
+                
+                // Lets see if these kids qualify for ART - ASSUME only newborns start ART (not 2-15 year olds)
+                double art = ((double)rand() / (RAND_MAX));
+                if (art<ART_coverage[p_cov]){ MyPointerToPerson->ART=*p_GT; MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+            }
+            
+            if (MyPointerToPerson->CD4_cat<4){
+                //cout << "Lets check this" << endl;
+            }
+            
+            // Lets evaluate for adults
+            if (MyPointerToPerson->Age>15){
+                
+                // For Men
+                if (MyPointerToPerson->Sex==1){
+                    
+                    float ART_at_CD4_M[12][7]={
+                        {0,         0,          0,          0,          0.02649,	0.01485,	0.01396},
+                        {0,         0,          0,          0,          0.06324,	0.03493,	0.03163},
+                        {0,         0,          0,          0,          0.14185,	0.07740,	0.06815},
+                        {0,         0,          0,          0,          0.18485,	0.09845,	0.08259},
+                        {0,         0,          0,          0,          0.25465,	0.13323,	0.10852},
+                        {0,         0,          0,          0,          0.37316,	0.18916,	0.14558},
+                        {0.02209,	0.01951,	0.01238,	0.00821,	0.43253,	0.20912,	0.14376},
+                        {0.01523,	0.01355,	0.07608,	0.05560,	0.24948,	0.11838,	0.07638},
+                        {0.01691,	0.01510,	0.11378,	0.07907,	0.24297,	0.11511,	0.07166},
+                        {0.01951,	0.01746,	0.14931,	0.09950,	0.25175,	0.12034,	0.07363},
+                        {0.01873,	0.04799,	0.11570,	0.07740,	0.17805,	0.08599,	0.05173},
+                        {0.03897,	0.14904,	0.17234,	0.11260,	0.19358,	0.08522,	0.04824},
+                    };
+                    
+                    double art = ((double)rand() / (RAND_MAX));
+                    if (art<ART_at_CD4_M[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+                    
+                    if (MyPointerToPerson->CD4_cat<4){
+                        //cout << "Lets check this" << endl;
+                        
+                        
+                        
+                        
+                        
+                    }
+                }
+                
+                // For Women
+                if (MyPointerToPerson->Sex==2){
+                    
+                    float ART_at_CD4_F[12][7]={
+                        {0,         0,          0,          0,          0.02511,	0.01399,	0.01320},
+                        {0,         0,          0,          0,          0.06003,	0.03308,	0.03029},
+                        {0,         0,          0,          0,          0.11665,	0.06372,	0.05703},
+                        {0,         0,          0,          0,          0.22836,	0.12237,	0.10487},
+                        {0,         0,          0,          0,          0.33454,	0.17126,	0.13470},
+                        {0,         0,          0,          0,          0.45025,	0.21597,	0.15357},
+                        {0.02937,	0.02652,	0.01729,	0.01182,	0.52829,	0.23224,	0.13967},
+                        {0.01982,	0.01807,	0.09625,	0.07162,	0.29861,	0.12595,	0.07239},
+                        {0.02186,	0.02001,	0.14027,	0.09733,	0.28823,	0.12135,	0.06745},
+                        {0.02509,	0.02306,	0.18195,	0.11913,	0.29281,	0.12401,	0.06674},
+                        {0.03044,	0.05959,	0.14018,	0.09169,	0.20540,	0.08747,	0.04602},
+                        {0.05760,	0.13219,	0.17286,	0.10999,	0.20289,	0.08216,	0.04231},
+                    };
+                    
+                    double art = ((double)rand() / (RAND_MAX));
+                    if (art<ART_at_CD4_F[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+                }
+                
+            }
+            
+        }
+      
+        
     
-        //Before the introduction of ART
-        if (*p_GT<2011){
+        //  If they do not start ART then we need to evaluate if they die or decrease in CD4 count
+        if (MyPointerToPerson->ART<0){
             
             if (CD4_test<death_test){
                 
@@ -253,12 +345,6 @@ void EventMyHIVInfection(person *MyPointerToPerson){
             }
             
         }
-        
-        // After the introduction of ART
-        
-      // TO INSERT!!!
-        
-     
 
     }
 
@@ -282,10 +368,84 @@ void EventCD4change(person *MyPointerToPerson){
         while (MyPointerToPerson->Age>=a && a<46){a=a+10; i++;};				// To get the right age-specific row in the above sex-specific arrays
         MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
         MyPointerToPerson->CD4_cat=MyPointerToPerson->CD4_cat+1;                // Update CD4 count
+        MyPointerToPerson->CD4_change.at(MyPointerToPerson->CD4_cat)=*p_GT;
         
         
-        //// --- When CD4 count hits the lowest possible value --- ////
-        if (MyPointerToPerson->CD4_cat==6){
+        //// --- Lets see if they start ART now --- ////
+        if (*p_GT>=ART_start_yr){
+            
+            // First lets see if they would start ART now
+            
+            // To do so we first need to find year ref for ART data arrays
+            int p_cov=floor(*p_GT)-ART_start_yr;
+            if (*p_GT>2015){p_cov=11;}
+                    
+            // Lets check if they start ART
+            if (MyPointerToPerson->Age<=1.5){
+                
+                float ART_coverage[11]={0.00435, 0.01024, 0.03817, 0.05674, 0.08456, 0.12762, 0.19595, 0.23988, 0.29309, 0.29978, 0.37502};
+                
+                // Lets see if these kids qualify for ART - ASSUME only newborns start ART (not 2-15 year olds)
+                double art = ((double)rand() / (RAND_MAX));
+                if (art<ART_coverage[p_cov]){ MyPointerToPerson->ART=*p_GT; MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+            }
+            
+            // Lets evaluate for adults
+            if (MyPointerToPerson->Age>15){
+                
+                // For Men
+                if (MyPointerToPerson->Sex==1){
+                    
+                    float ART_at_CD4_M[12][7]={
+                        {0,         0,          0,          0,          0.02649,	0.01485,	0.01396},
+                        {0,         0,          0,          0,          0.06324,	0.03493,	0.03163},
+                        {0,         0,          0,          0,          0.14185,	0.07740,	0.06815},
+                        {0,         0,          0,          0,          0.18485,	0.09845,	0.08259},
+                        {0,         0,          0,          0,          0.25465,	0.13323,	0.10852},
+                        {0,         0,          0,          0,          0.37316,	0.18916,	0.14558},
+                        {0.02209,	0.01951,	0.01238,	0.00821,	0.43253,	0.20912,	0.14376},
+                        {0.01523,	0.01355,	0.07608,	0.05560,	0.24948,	0.11838,	0.07638},
+                        {0.01691,	0.01510,	0.11378,	0.07907,	0.24297,	0.11511,	0.07166},
+                        {0.01951,	0.01746,	0.14931,	0.09950,	0.25175,	0.12034,	0.07363},
+                        {0.01873,	0.04799,	0.11570,	0.07740,	0.17805,	0.08599,	0.05173},
+                        {0.03897,	0.14904,	0.17234,	0.11260,	0.19358,	0.08522,	0.04824},
+                    };
+                    
+                    double art = ((double)rand() / (RAND_MAX));
+                    if (art<ART_at_CD4_M[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+                }
+                
+                // For Women
+                if (MyPointerToPerson->Sex==2){
+                    
+                    float ART_at_CD4_F[12][7]={
+                        {0,         0,          0,          0,          0.02511,	0.01399,	0.01320},
+                        {0,         0,          0,          0,          0.06003,	0.03308,	0.03029},
+                        {0,         0,          0,          0,          0.11665,	0.06372,	0.05703},
+                        {0,         0,          0,          0,          0.22836,	0.12237,	0.10487},
+                        {0,         0,          0,          0,          0.33454,	0.17126,	0.13470},
+                        {0,         0,          0,          0,          0.45025,	0.21597,	0.15357},
+                        {0.02937,	0.02652,	0.01729,	0.01182,	0.52829,	0.23224,	0.13967},
+                        {0.01982,	0.01807,	0.09625,	0.07162,	0.29861,	0.12595,	0.07239},
+                        {0.02186,	0.02001,	0.14027,	0.09733,	0.28823,	0.12135,	0.06745},
+                        {0.02509,	0.02306,	0.18195,	0.11913,	0.29281,	0.12401,	0.06674},
+                        {0.03044,	0.05959,	0.14018,	0.09169,	0.20540,	0.08747,	0.04602},
+                        {0.05760,	0.13219,	0.17286,	0.10999,	0.20289,	0.08216,	0.04231},
+                    };
+                    
+                    double art = ((double)rand() / (RAND_MAX));
+                    if (art<ART_at_CD4_F[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
+                    
+                }
+                
+            }
+            
+        }
+        
+       
+        
+        //// --- When CD4 count hits the lowest possible value and no ART is started --- ////
+        if (MyPointerToPerson->CD4_cat==6 && MyPointerToPerson->ART<0){
             
             double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
             
@@ -311,7 +471,7 @@ void EventCD4change(person *MyPointerToPerson){
         };
 
     
-        //// --- In case CD4 count is higher than minimum possible category --- ///
+        //// --- In case CD4 count is higher than minimum possible category.  They can either die OR Progress AND they still have a 1 year risk of death if on ART --- ///
         if (MyPointerToPerson->CD4_cat<6){
         
             //// --- Let's see what will happen next (Death, CD4 count progression or ART initiation) ---- ////
@@ -319,12 +479,6 @@ void EventCD4change(person *MyPointerToPerson){
             double FindCD4_rate = CD4_prog_rates[MyPointerToPerson->Sex-1][MyPointerToPerson->CD4_cat];
             double FindDeath_CD4_rate = Death_CD4_rates[MyPointerToPerson->Sex-1][i][MyPointerToPerson->CD4_cat];
             
-            
-            // Lets see when ART would start
-            double ART_test = 0;
-            double art = ((double)rand() / (RAND_MAX));
-            ART_test = (-1/FindART_CD4_rate) * log(art);
-  
             
             // Lets see when CD4 count progression would start
             double CD4_test = 0;
@@ -338,8 +492,8 @@ void EventCD4change(person *MyPointerToPerson){
             death_test = (-1/FindDeath_CD4_rate) * log(dd);
             
             
-            //Before the introduction of ART
-            if (*p_GT<2011){
+            // If patient hasn't started ART yet
+            if (MyPointerToPerson->ART<0){
                 
                 if (CD4_test<death_test){
                     //cout << "We are scheduling a CD4 progression " << endl;
@@ -373,11 +527,9 @@ void EventCD4change(person *MyPointerToPerson){
                 }
                 
             }
+            
         }
-        
-        // After the introduction of ART
-        
-        // TO INSERT!!!
+
 
 	}
 	
@@ -391,18 +543,136 @@ void EventMyDepressionDate(person *MyPointerToPerson)		// Function executed when
 {
     E(cout << endl << endl << "This patient just developed depression!" << endl;)
     MyPointerToPerson->Depression_status=1;
+    
+    // Lets see if we need to update death date
+    double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+    int ncd_index=1;
+    
+    // Lets see if they die earlier
+    int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+    int j=0;												// This will be matched to probability taken from random number generator
+    double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+    double TestDeathDate;
+    
+    if (MyPointerToPerson->Sex==1){
+        while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (MyPointerToPerson->Sex==2) {
+        while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        
+        MyPointerToPerson->DateOfDeath=TestDeathDate;
+        
+        // 2. Lets feed death into the eventQ
+        if (MyPointerToPerson->DateOfDeath<EndYear){
+            int p=MyPointerToPerson->PersonID-1;
+            event * DeathEvent = new event;
+            Events.push_back(DeathEvent);
+            DeathEvent->time = MyPointerToPerson->DateOfDeath;
+            DeathEvent->p_fun = &EventMyDeathDate;
+            DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+            p_PQ->push(DeathEvent);
+            
+            // Update cause of death
+            MyPointerToPerson->CauseOfDeath=ncd_index+2;
+        }
+    }
+    
 }
 
 void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when person develops asthma
 {
     E(cout << endl << endl << "This patient just developed asthma!" << endl;)
     MyPointerToPerson->Asthma_status=1;
+    
+    // Lets see if we need to update death date
+    double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+    int ncd_index=2;
+    
+    // Lets see if they die earlier
+    int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+    int j=0;												// This will be matched to probability taken from random number generator
+    double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+    double TestDeathDate;
+    
+    if (MyPointerToPerson->Sex==1){
+        while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (MyPointerToPerson->Sex==2) {
+        while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        
+        MyPointerToPerson->DateOfDeath=TestDeathDate;
+        
+        // 2. Lets feed death into the eventQ
+        if (MyPointerToPerson->DateOfDeath<EndYear){
+            int p=MyPointerToPerson->PersonID-1;
+            event * DeathEvent = new event;
+            Events.push_back(DeathEvent);
+            DeathEvent->time = MyPointerToPerson->DateOfDeath;
+            DeathEvent->p_fun = &EventMyDeathDate;
+            DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+            p_PQ->push(DeathEvent);
+            
+            // Update cause of death
+            MyPointerToPerson->CauseOfDeath=ncd_index+2;
+        }
+    }
 }
 
 void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     E(cout << endl << endl << "This patient just developed stroke!" << endl;)
     MyPointerToPerson->Stroke_status=1;
+    
+    // Lets see if we need to update death date
+    double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+    int ncd_index=3;
+    
+    // Lets see if they die earlier
+    int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+    int j=0;												// This will be matched to probability taken from random number generator
+    double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+    double TestDeathDate;
+    
+    if (MyPointerToPerson->Sex==1){
+        while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (MyPointerToPerson->Sex==2) {
+        while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        
+        MyPointerToPerson->DateOfDeath=TestDeathDate;
+        
+        // 2. Lets feed death into the eventQ
+        if (MyPointerToPerson->DateOfDeath<EndYear){
+            int p=MyPointerToPerson->PersonID-1;
+            event * DeathEvent = new event;
+            Events.push_back(DeathEvent);
+            DeathEvent->time = MyPointerToPerson->DateOfDeath;
+            DeathEvent->p_fun = &EventMyDeathDate;
+            DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+            p_PQ->push(DeathEvent);
+            
+            // Update cause of death
+            MyPointerToPerson->CauseOfDeath=ncd_index+2;
+        }
+    }
 }
 
 
@@ -415,6 +685,46 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
     {
         // First lets update Diabetes status to make sure any over-written dates don't run the same cod again
         MyPointerToPerson->Diabetes_status=1;
+        
+        // Lets see if we need to update death date
+        double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+        int ncd_index=4;
+        
+        // Lets see if they die earlier
+        int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+        int j=0;												// This will be matched to probability taken from random number generator
+        double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+        double TestDeathDate;
+        
+        if (MyPointerToPerson->Sex==1){
+            while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (MyPointerToPerson->Sex==2) {
+            while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+            
+            MyPointerToPerson->DateOfDeath=TestDeathDate;
+            
+            // 2. Lets feed death into the eventQ
+            if (MyPointerToPerson->DateOfDeath<EndYear){
+                int p=MyPointerToPerson->PersonID-1;
+                event * DeathEvent = new event;
+                Events.push_back(DeathEvent);
+                DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                DeathEvent->p_fun = &EventMyDeathDate;
+                DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+                p_PQ->push(DeathEvent);
+                
+                // Update cause of death
+                MyPointerToPerson->CauseOfDeath=ncd_index+2;
+            }
+        }
+        
         
         
         // Some basic code and finding index for not getting NCDs
@@ -503,6 +813,45 @@ void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when pe
         // First lets update Diabetes status to make sure any over-written dates don't run the same cod again
         MyPointerToPerson->HT_status=1;
         
+        // Lets see if we need to update death date
+        double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+        int ncd_index=0;
+        
+        // Lets see if they die earlier
+        int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+        int j=0;												// This will be matched to probability taken from random number generator
+        double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+        double TestDeathDate;
+        
+        if (MyPointerToPerson->Sex==1){
+            while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (MyPointerToPerson->Sex==2) {
+            while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+            
+            MyPointerToPerson->DateOfDeath=TestDeathDate;
+            
+            // 2. Lets feed death into the eventQ
+            if (MyPointerToPerson->DateOfDeath<EndYear){
+                int p=MyPointerToPerson->PersonID-1;
+                event * DeathEvent = new event;
+                Events.push_back(DeathEvent);
+                DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                DeathEvent->p_fun = &EventMyDeathDate;
+                DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+                p_PQ->push(DeathEvent);
+                
+                // Update cause of death
+                MyPointerToPerson->CauseOfDeath=ncd_index+2;
+            }
+        }
+        
         
         // Some basic code and finding index for not getting NCDs
         int ncd_nr=0;
@@ -560,5 +909,52 @@ void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when pe
         }
     }
     E(cout << endl << endl << "Hypercholesterolaemia has developed and addition risks evaluated!" << endl;)
+}
+
+
+void EventMyCKDDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    
+    E(cout << endl << endl << "This patient just developed CKD!" << endl;)
+    MyPointerToPerson->CKD_status=1;
+    
+    // Lets see if we need to update death date
+    double MortRisk[6]={1.52, 0, 1.3, 1.59, 1.77, 0.8};
+    int ncd_index=5;
+    
+    // Lets see if they die earlier
+    int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+    int j=0;												// This will be matched to probability taken from random number generator
+    double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+    double TestDeathDate;
+    
+    if (MyPointerToPerson->Sex==1){
+        while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (MyPointerToPerson->Sex==2) {
+        while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+        TestDeathDate=(MyPointerToPerson->DoB+j);
+    }
+    
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        
+        MyPointerToPerson->DateOfDeath=TestDeathDate;
+        
+        // 2. Lets feed death into the eventQ
+        if (MyPointerToPerson->DateOfDeath<EndYear){
+            int p=MyPointerToPerson->PersonID-1;
+            event * DeathEvent = new event;
+            Events.push_back(DeathEvent);
+            DeathEvent->time = MyPointerToPerson->DateOfDeath;
+            DeathEvent->p_fun = &EventMyDeathDate;
+            DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+            p_PQ->push(DeathEvent);
+            
+            // Update cause of death
+            MyPointerToPerson->CauseOfDeath=ncd_index+2;
+        }
+    }
 }
 

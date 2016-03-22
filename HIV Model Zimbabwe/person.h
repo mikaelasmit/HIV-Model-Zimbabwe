@@ -32,12 +32,15 @@ public:
     vector<double> DatesBirth;						// Hold dates of the birth of all children - vector
     
     double DateOfDeath;								// -- Variables related to death --
+    int CauseOfDeath;
     int Alive;
     int AgeAtDeath;
     
     double HIV;										// -- Variables related to HIV --
     int CD4_cat_start;
+    int CD4_cat_ARTstart;
     int CD4_cat;
+    vector<double> CD4_change;
     int ART;
     
     double HT;                                      // -- Variables related to NCDs --
@@ -50,6 +53,8 @@ public:
     int Stroke_status;
     double Diabetes;
     int Diabetes_status;
+    double CKD;
+    int CKD_status;
     vector<double> NCD_DatesVector;
     
     
