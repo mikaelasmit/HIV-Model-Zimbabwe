@@ -131,14 +131,16 @@ int ARTAdult_Women[12][7]={
 
 
 int count_ARTKids=0;
-int count_ARTAdults_Men[7]={0, 0, 0, 0, 0, 0, 0};
-int count_ARTAdults_Women[7]={0, 0, 0, 0, 0, 0, 0};
 int count_ARTAdult_Men[12][7]={};
 int count_ARTAdult_Women[12][7]={};
 
 int ART_index=0;
+
 int ARTMen_sum[12]={24, 81, 183, 292, 402, 599, 951, 1395, 1751, 2075, 2455, 3719};
 int ARTWomen_sum[12]={31, 104, 215, 427, 722, 1074, 1706, 2482, 3067, 3616, 4306, 5716};
+
+int count_ARTMen_sum[7]={0, 0, 0, 0, 0, 0, 0};
+int count_ARTWomen_sum[7]={0, 0, 0, 0, 0, 0, 0};
     
 
 
@@ -156,14 +158,14 @@ void EventTellNewYear(person *MyPointerToPerson){
     if (*p_GT>=2004){
         
         // Add people on ART until we hit our aim
-        while (count_ARTKids<ARTKids[ART_index] || count_ARTAdults_Men[ART_index]<ARTMen_sum[ART_index] || count_ARTAdults_Women[ART_index]<ARTWomen_sum[ART_index]){
+        while (count_ARTKids<ARTKids[ART_index] || count_ARTMen_sum[ART_index]<ARTMen_sum[ART_index] || count_ARTWomen_sum[ART_index]<ARTWomen_sum[ART_index]){
             
             
             // Get a random person and update age
             int i=(RandomMinMax_2(1,total_population-1));
             cout << "Random number is: " << i << " total pop: " << total_population << endl;
             MyArrayOfPointersToPeople[i]->Age=(*p_GT - MyArrayOfPointersToPeople[i]->DoB);
-            cout << "My new age is: " << MyArrayOfPointersToPeople[i]->Age << " and my DoB: " << MyArrayOfPointersToPeople[i]->DoB << " and GT: " << *p_GT << " HIV: " << MyArrayOfPointersToPeople[i]->HIV << endl;
+            cout << "My new age is: " << MyArrayOfPointersToPeople[i]->Age << " and my DoB: " << MyArrayOfPointersToPeople[i]->DoB << " and GT: " << *p_GT << " HIV: " << MyArrayOfPointersToPeople[i]->HIV << " My CD4 count: " << MyArrayOfPointersToPeople[i]->CD4_cat << " Alive " << MyArrayOfPointersToPeople[i]->Alive << " Sex: " << MyArrayOfPointersToPeople[i]->Sex << endl;
             
             
             // Lets get some kids onto ART
@@ -193,18 +195,18 @@ void EventTellNewYear(person *MyPointerToPerson){
             // Lets let men start ART
             if (MyArrayOfPointersToPeople[i]->Sex==1 && MyArrayOfPointersToPeople[i]->Age>18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1){
                 
-                cout << "Quick test on zero array: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
+                cout << "Quick test on zero array: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " and we need to get to: " << ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
                 
-                if (ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] < count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
+                if (ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << ARTMen_sum[ART_index] << endl;
+                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTMen_sum[ART_index] << endl;
                     
                     MyArrayOfPointersToPeople[i]->ART=*p_GT;                                                    // Lets set ART date
                     MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
                     count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]++;                     // Update our counter CD4/ART array
-                    ARTMen_sum[ART_index]++;                                                                    // Update the sum counter
+                    count_ARTMen_sum[ART_index]++;                                                                    // Update the sum counter
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << ARTMen_sum[ART_index] << endl;
+                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTMen_sum[ART_index] << endl;
 
                 }
             
@@ -212,18 +214,18 @@ void EventTellNewYear(person *MyPointerToPerson){
             
             if (MyArrayOfPointersToPeople[i]->Sex==2 && MyArrayOfPointersToPeople[i]->Age>18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1){
                 
-                cout << "Quick test on zero array: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
+                cout << "Quick test on zero array: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " and we need to get to: " << ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
                 
-                if (ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] < count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
+                if (ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << ARTWomen_sum[ART_index] << endl;
+                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTWomen_sum[ART_index] << endl;
                     
                     MyArrayOfPointersToPeople[i]->ART=*p_GT;                                                    // Lets set ART date
                     MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
                     count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]++;                     // Update our counter CD4/ART array
-                    ARTWomen_sum[ART_index]++;                                                                    // Update the sum counter
+                    count_ARTWomen_sum[ART_index]++;                                                                    // Update the sum counter
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << ARTWomen_sum[ART_index] << endl;
+                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTWomen_sum[ART_index] << endl;
                     
                 }
             
@@ -278,19 +280,19 @@ void EventARTCatSwitch(person *MyPointerToPerson){
         
 
         if (MyPointerToPerson->Sex==1){
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTAdults_Men << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
+            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTMen_sum[ART_index] << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
             count_ARTKids=count_ARTKids-1;                                                                          // Lets remove one count from the kids category
-            count_ARTAdults_Men[ART_index]=count_ARTAdults_Men[ART_index]++;                                        // Lets add a count to the adult category
+            count_ARTMen_sum[ART_index]=count_ARTMen_sum[ART_index]++;                                        // Lets add a count to the adult category
             count_ARTAdult_Men[ART_index][4]=  count_ARTAdult_Men[ART_index][4]++;                                  // Lets update the ART CD4 array counter
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTAdults_Men << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
+            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTMen_sum[ART_index] << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
         }
     
         if (MyPointerToPerson->Sex==2){
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTAdults_Women << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] <<endl;
+            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTWomen_sum << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] <<endl;
             count_ARTKids=count_ARTKids-1;                                                                          // Lets remove one count from the kids category
-            count_ARTAdults_Women[4]=count_ARTAdults_Women[4]++;                                                    // Lets add a count to the adult category
-            count_ARTAdult_Men[ART_index][4]=  count_ARTAdult_Men[ART_index][4]++;                                  // Lets update the ART CD4 array counter
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTAdults_Women << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] << endl;
+            count_ARTWomen_sum[4]=count_ARTWomen_sum[4]++;                                                    // Lets add a count to the adult category
+            count_ARTAdult_Women[ART_index][4]=  count_ARTAdult_Women[ART_index][4]++;                                  // Lets update the ART CD4 array counter
+            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTWomen_sum << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] << endl;
         }
     }
 }
@@ -302,31 +304,37 @@ void EventMyDeathDate(person *MyPointerToPerson){
     // Lets kills people
 	if (MyPointerToPerson->Alive==1){MyPointerToPerson->Alive=0;}
     
+    
     // Lets also update ART information as people die
-    MyPointerToPerson->Age=(*p_GT - MyPointerToPerson->DoB);  // First we update age
-    cout << "Age at death: " << MyPointerToPerson->Age << " DoB: " << MyPointerToPerson->DoB << " and GT: " << *p_GT << " Sex: " << MyPointerToPerson->Sex << " CD4 at start: " << MyPointerToPerson->CD4_cat_start << " PersonID: " << MyPointerToPerson->PersonID << endl;
-    
-    // If it is a child
-    if (MyPointerToPerson->ART>0 && MyPointerToPerson->Age<18){
-        cout << "Count before: " << count_ARTKids << endl;
-        count_ARTKids=count_ARTKids-1;
-        cout << "Count before: " << count_ARTKids << endl;
-    }
-    
-    // If it is a man
-    if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
-        cout << "Count before: " << count_ARTKids << endl;
-        ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
-        cout << "Count before: " << count_ARTKids << endl;
-    }
-    
-    // If it is a man
-    if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
-        cout << "Count before: " << count_ARTKids << endl;
-        ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
-        cout << "Count before: " << count_ARTKids << endl;
-    }
+    if (MyPointerToPerson->HIV>0 && MyPointerToPerson->HIV<*p_GT && MyPointerToPerson->ART>0){
         
+        // First we need to update age
+        MyPointerToPerson->Age=(*p_GT - MyPointerToPerson->DoB);  // First we update age
+        cout << "Age at death: " << MyPointerToPerson->Age << " DoB: " << MyPointerToPerson->DoB << " and GT: " << *p_GT << " Sex: " << MyPointerToPerson->Sex << " CD4 at start: " << MyPointerToPerson->CD4_cat_start << " PersonID: " << MyPointerToPerson->PersonID << endl;
+    
+        // If it is a child
+        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Age<18){
+            cout << "Count before: " << count_ARTKids << endl;
+            count_ARTKids=count_ARTKids-1;
+            cout << "Count before: " << count_ARTKids << endl;
+        }
+    
+        // If it is a man
+        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
+            cout << "Count before: " << count_ARTKids << endl;
+            ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
+            cout << "Count before: " << count_ARTKids << endl;
+        }
+    
+        // If it is a man
+        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
+            cout << "Count before: " << count_ARTKids << endl;
+            ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
+            cout << "Count before: " << count_ARTKids << endl;
+        }
+        
+    }
+    
 	  
         
     E(cout << "Person " << MyPointerToPerson->PersonID << " just died. Their life status now is: " << MyPointerToPerson->Alive << endl;)
