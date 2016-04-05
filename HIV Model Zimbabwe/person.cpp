@@ -44,6 +44,8 @@ extern double** NCDArray;
 extern int*     NCDAgeArrayMin;
 extern int*     NCDAgeArrayMax;
 
+extern double   MortAdj;
+
 
 
 //// --- Important Internal informtaion --- ////
@@ -76,7 +78,7 @@ person::person()											// First 'person' class second constructor/variable a
     Alive=-999;												// Variable to update eventQ - global check to see if person is still alive
     
     HIV=-999;												// --- Variables related to HIV-infection ---
-    CD4_cat_start=-999;
+    CD4_cat_start=-999;                                     // CD4 at HIV infection
     CD4_cat_ARTstart=-999;
     CD4_cat=-999;											// Where 0=>500, 1=350-500, 2=250-350, 3=200-250, 4=100-200, 5=50-100, and 6=<50
     CD4_change.resize(7);
@@ -249,20 +251,20 @@ void person::GetDateOfDeath(){								// This is done by assigning life expactan
     double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
     
     if (Sex==1){
-        while(d>DeathArray_Men[i][j] && j<121){j++;}
+        while(d>DeathArray_Men[i][j]*MortAdj && j<121){j++;}
         DateOfDeath=(DoB+j);
         while (DateOfDeath<*p_GT){							// Run this again if Death happens in the past (important for 1950)
             double	d = ((double) rand() / (RAND_MAX)) ;	// get a random number to determine Life Expectancy
-            while(d>DeathArray_Men[i][j] && j<121){j++;}
+            while(d>DeathArray_Men[i][j]*MortAdj && j<121){j++;}
             DateOfDeath=(DoB+j);}
     }
     
     if (Sex==2) {
-        while(d>DeathArray_Women[i][j] && j<121){j++;}
+        while(d>DeathArray_Women[i][j]*MortAdj && j<121){j++;}
         DateOfDeath=(DoB+j);
         while (DateOfDeath<*p_GT){							// Run this again if Death happens in the past (important for 1950)
             double	d = ((double) rand() / (RAND_MAX)) ;	// Gets a random number to determine Life Expectancy
-            while(d>DeathArray_Women[i][j] && j<121){j++;}
+            while(d>DeathArray_Women[i][j]*MortAdj && j<121){j++;}
             DateOfDeath=(DoB+j);};
     }
     
