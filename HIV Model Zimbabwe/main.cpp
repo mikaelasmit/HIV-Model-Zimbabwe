@@ -180,7 +180,7 @@ int main(){
     FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!

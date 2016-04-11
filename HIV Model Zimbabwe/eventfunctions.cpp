@@ -10,6 +10,7 @@
 #include <time.h>
 #include <ctime>
 #include <math.h>                                                          // For 'log'
+#include <vector>
 #include "eventfunctions.h"
 #include "event.h"															// Need to add these to be able to	
 #include "eventQ.h"															// [...]run Global Time and Recurrent events pointers
@@ -98,9 +99,7 @@ int nr_NCD_HT=sizeof(relatedNCDs_HT)/sizeof(relatedNCDs_HT[0]);
 
 
 //ART Array
-int ARTKids[12]={4, 12, 41, 80, 120, 178, 268, 362, 435, 467, 506, 588};
-
-int ARTAdult_Men[12][7]={
+int ARTAdult_Men[12][7]={                       // ART by CD4 count from 2004 to 2015
     {0,   0,   0,   0,   12,  7,   6},
     {0,   0,   0,   0,   39,  22,  20},
     {0,   0,   0,   0,   90,  49,  43},
@@ -128,20 +127,38 @@ int ARTAdult_Women[12][7]={
     {198, 388,	913,  597, 1338, 570, 300},
     {412, 945,  1235, 786, 1450, 587, 302},};
 
+int ARTKids[13] =     {4,  12,  41,  80,  120, 178,  268,  363,  435,  467,  506,  588, 300};     // This array is the sum of kids under 5 years old on ART
+
+// Parameters sums (sums of above arrays (across CD4 count - total for year)
+int ARTMen_sum[13] =  {24, 81,  183, 292, 402, 599,  951,  1395, 1751, 2075, 2455, 3719, 0};
+int ARTWomen_sum[13]= {31, 104, 215, 427, 722, 1074, 1706, 2482, 3067, 3616, 4306, 5716, 0};
 
 
+
+// Count to compare to sum and CD4-specific numbers
+int count_ARTAdult_Men[7]={0, 0, 0, 0, 0, 0, 0};        // Count by CD4 count category
+int count_ARTAdult_Women[7]={0, 0, 0, 0, 0, 0, 0};      // Count by CD4 count category
+int count_ARTMen_sum=0;                                 // Count the sum for the year - men
+int count_ARTWomen_sum=0;                               // Count the sum for the year - women
 int count_ARTKids=0;
-int count_ARTAdult_Men[12][7]={};
-int count_ARTAdult_Women[12][7]={};
 
+
+// Index for the ART year
 int ART_index=0;
 
-int ARTMen_sum[12]={24, 81, 183, 292, 402, 599, 951, 1395, 1751, 2075, 2455, 3719};
-int ARTWomen_sum[12]={31, 104, 215, 427, 722, 1074, 1706, 2482, 3067, 3616, 4306, 5716};
 
-int count_ARTMen_sum[7]={0, 0, 0, 0, 0, 0, 0};
-int count_ARTWomen_sum[7]={0, 0, 0, 0, 0, 0, 0};
-    
+// To get random index and only chekc HIV+
+int HIV_Ref_PersonID[50000]={};
+int countHIVRef=0;
+
+int KIDS_HIV_Ref_PersonID[50000]={};
+int countKIDSHIVRef=0;
+
+// Count real available patients for error message
+int Elig_Men=0;
+int Elig_Women=0;
+int Elig_Kids=0;
+
 
 
 //////////////////////////////////////
@@ -151,95 +168,108 @@ int count_ARTWomen_sum[7]={0, 0, 0, 0, 0, 0, 0};
 //// --- NEW YEAR FUNCTION --- ////
 void EventTellNewYear(person *MyPointerToPerson){				
 																		
-	cout << "A new year has started, it is now " << *p_GT << endl;                                          // This whole function to output every time a new year starts - to make sure the model is actually running
+	cout << "A new year has started, it is now " << *p_GT << endl;      // Tells us a new year has started
 	
     
     // Lets set the first people on ART
     if (*p_GT>=2004){
         
+        cout << "Count Kids " << count_ARTKids << " Real kids: " << ARTKids[ART_index] << " Count Men: " << count_ARTMen_sum << " Real Men: " << ARTMen_sum[ART_index] << " Count Women: " << count_ARTWomen_sum << " Real Women: " << ARTWomen_sum[ART_index] << " ART_index: " << ART_index << endl;
+        
+        cout << "Ref Kids: " << countKIDSHIVRef << " Elig Kids " << Elig_Kids << " need: " << ARTKids[ART_index] -count_ARTKids << endl;
+        cout << " Ref ADULTS " << countHIVRef << " Elif_men " << Elig_Men << " need " << ARTMen_sum[ART_index] - count_ARTMen_sum << endl;
+         cout << " Ref ADULTS " << countHIVRef << " Elig_women " << Elig_Women << " need " << ARTWomen_sum[ART_index] - count_ARTWomen_sum << endl;
+        
+        
         // Add people on ART until we hit our aim
-        while (count_ARTKids<ARTKids[ART_index] || count_ARTMen_sum[ART_index]<ARTMen_sum[ART_index] || count_ARTWomen_sum[ART_index]<ARTWomen_sum[ART_index]){
+        while (count_ARTKids<ARTKids[ART_index] || count_ARTMen_sum<ARTMen_sum[ART_index] || count_ARTWomen_sum<ARTWomen_sum[ART_index]){
             
             
-            // Get a random person and update age
-            int i=(RandomMinMax_2(1,total_population-1));
-            cout << "Random number is: " << i << " total pop: " << total_population << endl;
-            MyArrayOfPointersToPeople[i]->Age=(*p_GT - MyArrayOfPointersToPeople[i]->DoB);
-            cout << "My new age is: " << MyArrayOfPointersToPeople[i]->Age << " and my DoB: " << MyArrayOfPointersToPeople[i]->DoB << " and GT: " << *p_GT << " HIV: " << MyArrayOfPointersToPeople[i]->HIV << " My CD4 count: " << MyArrayOfPointersToPeople[i]->CD4_cat << " Alive " << MyArrayOfPointersToPeople[i]->Alive << " Sex: " << MyArrayOfPointersToPeople[i]->Sex << endl;
+            if (count_ARTKids<ARTKids[ART_index] ){
+                
+                int a=(RandomMinMax_2(1,countKIDSHIVRef-1));    // Get a random person and update age
+                int i=KIDS_HIV_Ref_PersonID[a]-1;
+                //cout << "A: " << a << " and countHIVREf " << countHIVRef << endl;
+                //cout << " TESTING countHIVREF " << countKIDSHIVRef << " a " << a << " HIV check " << MyArrayOfPointersToPeople[i]->HIV << endl;
+                MyArrayOfPointersToPeople[i]->Age=(*p_GT - MyArrayOfPointersToPeople[i]->DoB);
+           
             
             
             // Lets get some kids onto ART
-            if (MyArrayOfPointersToPeople[i]->Age<4 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1){
+            if (((MyArrayOfPointersToPeople[i]->Age<18 && *p_GT<2012)|| (MyArrayOfPointersToPeople[i]->Age<18 && *p_GT>=2012)) && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<=*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 && MyArrayOfPointersToPeople[i]->Alive==1 && count_ARTKids<ARTKids[ART_index] ){
                 
-                cout << "ART date before " << MyArrayOfPointersToPeople[i]->ART << endl;
+                //cout << "ART date before " << MyArrayOfPointersToPeople[i]->ART << endl;
 
-                MyArrayOfPointersToPeople[i]->ART=*p_GT;                                                    // Lets set ART date
+                MyArrayOfPointersToPeople[i]->ART=*p_GT;            // Lets set ART date
                 MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
-                count_ARTKids++;                                                                            // Update our counter
+                count_ARTKids++;                                    // Update our counter
+                //cout << "countKids: " << count_ARTKids << " real " << ARTKids[ART_index] << endl;
                 
-                cout << "Date ART: " << MyArrayOfPointersToPeople[i]->ART << " countKids: " << count_ARTKids << endl;
-                
-                // Now we need to schedule an event where we move them to adult category
-                double DateCD4CatSwitch=*p_GT + (18-MyArrayOfPointersToPeople[i]->Age);
-                
-                // Schedule event for moving from kids ART to adult ART
-                event * ARTCatMove = new event;
-                Events.push_back(ARTCatMove);
-                ARTCatMove->time = *p_GT + 1;
-                ARTCatMove->p_fun = &EventARTCatSwitch;
-                ARTCatMove->person_ID = MyArrayOfPointersToPeople[i];
-                p_PQ->push(ARTCatMove);
+                }
             }
             
+            
+            // Lets see if adults start ART
+            if (count_ARTMen_sum<ARTMen_sum[ART_index] || count_ARTWomen_sum<ARTWomen_sum[ART_index]){
+                
+                int a=(RandomMinMax_2(1,countHIVRef-1));
+                int i=HIV_Ref_PersonID[a]-1;
+                MyArrayOfPointersToPeople[i]->Age=(*p_GT - MyArrayOfPointersToPeople[i]->DoB);
+            
+                //if (*p_GT>2014){
+                    //cout << "Sex " << MyArrayOfPointersToPeople[i]->Sex << " Age: " << MyArrayOfPointersToPeople[i]->Age << " HIV " << MyArrayOfPointersToPeople[i]->HIV << " ART: " << MyArrayOfPointersToPeople[i]->ART << " Alive: " << MyArrayOfPointersToPeople[i]->Alive << " count " << count_ARTMen_sum << " real " << ARTMen_sum[ART_index] << endl;
+               // }
             
             // Lets let men start ART
-            if (MyArrayOfPointersToPeople[i]->Sex==1 && MyArrayOfPointersToPeople[i]->Age>18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1){
+            if (MyArrayOfPointersToPeople[i]->Sex==1 && MyArrayOfPointersToPeople[i]->Age>=18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1 && count_ARTMen_sum<ARTMen_sum[ART_index] ){
                 
-                cout << "Quick test on zero array: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " and we need to get to: " << ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
                 
-                if (ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
+                
+                if (1.05*ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]){
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTMen_sum[ART_index] << endl;
-                    
-                    MyArrayOfPointersToPeople[i]->ART=*p_GT;                                                    // Lets set ART date
+                    MyArrayOfPointersToPeople[i]->ART=*p_GT;                        // Lets set ART date
                     MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
-                    count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]++;                     // Update our counter CD4/ART array
-                    count_ARTMen_sum[ART_index]++;                                                                    // Update the sum counter
-                    
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTMen_sum[ART_index] << endl;
-
+                    count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]++;    // Update our counter CD4/ART array
+                    count_ARTMen_sum++;                                             // Update the sum counter
+                    if (*p_GT>2014){
+                    cout << "countMen: " << count_ARTMen_sum << " real " << ARTMen_sum[ART_index] <<endl;
+                    }
                 }
             
             }
+                
+                
             
-            if (MyArrayOfPointersToPeople[i]->Sex==2 && MyArrayOfPointersToPeople[i]->Age>18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1){
+            // Lets start women on ART
+            if (MyArrayOfPointersToPeople[i]->Sex==2 && MyArrayOfPointersToPeople[i]->Age>=18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1 && count_ARTWomen_sum<ARTWomen_sum[ART_index]){
                 
-                cout << "Quick test on zero array: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " and we need to get to: " << ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << endl;
-                
-                if (ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]){
+               
+                if (1.05*ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Women[MyArrayOfPointersToPeople[i]->CD4_cat]){
                     
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTWomen_sum[ART_index] << endl;
                     
-                    MyArrayOfPointersToPeople[i]->ART=*p_GT;                                                    // Lets set ART date
+                    MyArrayOfPointersToPeople[i]->ART=*p_GT;            // Lets set ART date
                     MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
-                    count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat]++;                     // Update our counter CD4/ART array
-                    count_ARTWomen_sum[ART_index]++;                                                                    // Update the sum counter
-                    
-                    cout << "ART/CD4 counter: " << count_ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] << " sum: " << count_ARTWomen_sum[ART_index] << endl;
-                    
+                    count_ARTAdult_Women[MyArrayOfPointersToPeople[i]->CD4_cat]++;  // Update our counter CD4/ART array
+                    count_ARTWomen_sum++;                               // Update the sum counter
+                    if (*p_GT>2014){
+                    cout << "countWomen: " << count_ARTWomen_sum << " real " << ARTWomen_sum[ART_index] <<endl;
+                    }
                 }
             
+            }
             }
             
         }
         
+        cout << "TESTING TESTING Count Kids " << count_ARTKids << " Real kids: " << ARTKids[ART_index] << " Count Men: " << count_ARTMen_sum << " Real Men: " << ARTMen_sum[ART_index] << " Count Women: " << count_ARTWomen_sum << " Real Women: " << ARTWomen_sum[ART_index]<< endl;
         
         
         // Lets update the ART index
         ART_index++;
-        if (ART_index>=7){ART_index=6;}
+        if (ART_index>12){ART_index=12;}
+        
+        
     }
-    
     
     
     
@@ -274,25 +304,40 @@ void EventTellNewYear(person *MyPointerToPerson){
 //// --- ART Category switch from Kids to Adult --- ////
 void EventARTCatSwitch(person *MyPointerToPerson){
     
-    E(cout << "We are switching our kids to adult ART count: " << endl;)                                            // Error message - can be switched on/off
+    E(cout << "We are switching our kids to adult ART count: " << endl;)       // Error message - can be switched on/off
     
-    if(MyPointerToPerson->Alive == 1) {                                                                             // Only let woman give birth if she is still alive
+    if(MyPointerToPerson->Alive == 1) {
+        
+        
+        // If they are not on ART
+         if (MyPointerToPerson->ART==-999){
+             
+             // First we need to add them to eligible adults for selection
+             HIV_Ref_PersonID[countHIVRef]=MyPointerToPerson->PersonID;         // And the patientID reference
+             countHIVRef++;                                                     // Then we need to updated the adult counter
+             Elig_Kids=Elig_Kids-1;
+             if (MyPointerToPerson->Sex==1){Elig_Men++;}
+             if (MyPointerToPerson->Sex==2){Elig_Women++;}
+             
+             //cout << "DEATH Sex " << MyPointerToPerson->Sex << endl;
+             //cout << "DEATH Elig Men " << Elig_Men << " Elig Women " << Elig_Women << " Elig kids " << Elig_Kids << endl;
+         }
+        
+        // If they are on ART
+        if (MyPointerToPerson->ART>0){
+            
+            if (count_ARTKids>0) {count_ARTKids=count_ARTKids-1;}              // This count how many children are still on ART
         
 
-        if (MyPointerToPerson->Sex==1){
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTMen_sum[ART_index] << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
-            count_ARTKids=count_ARTKids-1;                                                                          // Lets remove one count from the kids category
-            count_ARTMen_sum[ART_index]=count_ARTMen_sum[ART_index]++;                                        // Lets add a count to the adult category
-            count_ARTAdult_Men[ART_index][4]=  count_ARTAdult_Men[ART_index][4]++;                                  // Lets update the ART CD4 array counter
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTMen_sum[ART_index] << " ART/CD4 counter " << count_ARTAdult_Men[ART_index][4] << endl;
-        }
+            if (MyPointerToPerson->Sex==1){
+                count_ARTMen_sum++;                                             // Lets add a count to the adult category
+                count_ARTAdult_Men[4]++;                                        // Lets update the ART CD4 array counter
+            }
     
-        if (MyPointerToPerson->Sex==2){
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTWomen_sum << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] <<endl;
-            count_ARTKids=count_ARTKids-1;                                                                          // Lets remove one count from the kids category
-            count_ARTWomen_sum[4]=count_ARTWomen_sum[4]++;                                                    // Lets add a count to the adult category
-            count_ARTAdult_Women[ART_index][4]=  count_ARTAdult_Women[ART_index][4]++;                                  // Lets update the ART CD4 array counter
-            cout << "KIds cat: " << count_ARTKids << " Adults cat: " << count_ARTWomen_sum << " ART/CD4 counter " << count_ARTAdult_Women[ART_index][4] << endl;
+            if (MyPointerToPerson->Sex==2){
+                count_ARTWomen_sum++;                                           // Lets add a count to the adult category
+                count_ARTAdult_Women[4]++;                                      // Lets update the ART CD4 array counter
+            }
         }
     }
 }
@@ -300,42 +345,51 @@ void EventARTCatSwitch(person *MyPointerToPerson){
 
 //// --- DEATH EVENT --- ////	
 void EventMyDeathDate(person *MyPointerToPerson){
+    
 
     // Lets kills people
 	if (MyPointerToPerson->Alive==1){MyPointerToPerson->Alive=0;}
     
     
     // Lets also update ART information as people die
+    // 1. If they are not on ART
+    if (MyPointerToPerson->HIV>0 && MyPointerToPerson->HIV<*p_GT && MyPointerToPerson->ART==-999){
+        
+        // First we need to update age
+        MyPointerToPerson->Age=(*p_GT - MyPointerToPerson->DoB);  // First we update age
+        
+        if (MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){Elig_Men=Elig_Men-1;}
+        if (MyPointerToPerson->Sex==2 && MyPointerToPerson->Age>=18){Elig_Women=Elig_Women-1;}
+        if (MyPointerToPerson->Age<18){Elig_Kids=Elig_Kids-1;}
+        
+        //cout << "DEATH HIV " << MyPointerToPerson->HIV << " ART " << MyPointerToPerson->ART << " AGE " << MyPointerToPerson->Age << " Elig Men " << Elig_Men << Elig_Men << " Elig Women " << Elig_Women << " Elig kids " << Elig_Kids << endl;
+    }
+    
+    
+    // 2. If they are on ART
     if (MyPointerToPerson->HIV>0 && MyPointerToPerson->HIV<*p_GT && MyPointerToPerson->ART>0){
         
         // First we need to update age
         MyPointerToPerson->Age=(*p_GT - MyPointerToPerson->DoB);  // First we update age
-        cout << "Age at death: " << MyPointerToPerson->Age << " DoB: " << MyPointerToPerson->DoB << " and GT: " << *p_GT << " Sex: " << MyPointerToPerson->Sex << " CD4 at start: " << MyPointerToPerson->CD4_cat_start << " PersonID: " << MyPointerToPerson->PersonID << endl;
-    
-        // If it is a child
-        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Age<18){
-            cout << "Count before: " << count_ARTKids << endl;
-            count_ARTKids=count_ARTKids-1;
-            cout << "Count before: " << count_ARTKids << endl;
-        }
-    
-        // If it is a man
-        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
-            cout << "Count before: " << count_ARTKids << endl;
-            ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
-            cout << "Count before: " << count_ARTKids << endl;
-        }
-    
-        // If it is a man
-        if (MyPointerToPerson->ART>0 && MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
-            cout << "Count before: " << count_ARTKids << endl;
-            ARTMen_sum[MyPointerToPerson->CD4_cat_start]=ARTMen_sum[MyPointerToPerson->CD4_cat_start]-1;
-            cout << "Count before: " << count_ARTKids << endl;
-        }
         
+        // If it is a child
+        if (MyPointerToPerson->Age<18){
+            if (count_ARTKids>0) {count_ARTKids=count_ARTKids-1;}
+        }
+    
+        // If it is a man
+        if (MyPointerToPerson->Sex==1 && MyPointerToPerson->Age>=18){
+            count_ARTAdult_Men[MyPointerToPerson->CD4_cat_start]=count_ARTAdult_Men[MyPointerToPerson->CD4_cat_start]-1;
+            count_ARTMen_sum=count_ARTMen_sum-1;
+        }
+    
+        // If it is a woman
+        if (MyPointerToPerson->Sex==2 && MyPointerToPerson->Age>=18){
+            count_ARTAdult_Women[MyPointerToPerson->CD4_cat_start]=count_ARTAdult_Women[MyPointerToPerson->CD4_cat_start]-1;
+            count_ARTWomen_sum=count_ARTWomen_sum-1;
+        }
     }
     
-	  
         
     E(cout << "Person " << MyPointerToPerson->PersonID << " just died. Their life status now is: " << MyPointerToPerson->Alive << endl;)
 }
@@ -381,10 +435,46 @@ void EventMyHIVInfection(person *MyPointerToPerson){
 	E(cout << "Somebody is about to get infected with HIV: " << endl;)			// Error message - can be switched on/off
 
 	if(MyPointerToPerson->Alive == 1) {											// Only execute this is patient is still alove
+        
+        if (MyPointerToPerson->DateOfDeath<MyPointerToPerson->HIV){
+            cout << "Error! GT " << *p_GT << " PersonID: " << MyPointerToPerson->PersonID << " Death: " << MyPointerToPerson->DateOfDeath << " HIV: " << MyPointerToPerson->HIV<< endl;
+        }
+        
 	
 		MyPointerToPerson->Age= (*p_GT - MyPointerToPerson->DoB);				// Update age to get correct parameter below
 	
-
+        //// Update key parameters for ART
+        if (MyPointerToPerson->Age>18){
+            HIV_Ref_PersonID[countHIVRef]=MyPointerToPerson->PersonID;
+            countHIVRef++;
+            if (MyPointerToPerson->Sex==1){Elig_Men++;}
+            if (MyPointerToPerson->Sex==2){Elig_Women++;}
+            
+        }
+        
+        if (MyPointerToPerson->Age<18) {
+            KIDS_HIV_Ref_PersonID[countKIDSHIVRef]=MyPointerToPerson->PersonID;
+            countKIDSHIVRef++;
+            Elig_Kids++;
+            
+            
+            // Now we need to schedule an event where we move them to adult category
+            double DateCD4CatSwitch=(MyPointerToPerson->DoB+18);
+            
+            
+            // Schedule event for moving from kids ART to adult ART
+            event * ARTCatMove = new event;
+            Events.push_back(ARTCatMove);
+            ARTCatMove->time = DateCD4CatSwitch;
+            ARTCatMove->p_fun = &EventARTCatSwitch;
+            ARTCatMove->person_ID = MyPointerToPerson;
+            p_PQ->push(ARTCatMove);
+        }
+        
+        //cout << "HIV: Sex " << MyPointerToPerson->Sex << " Age " << MyPointerToPerson->Age << " Elig Men " << Elig_Men << " Elig Women " << Elig_Women << " Elig kids " << Elig_Kids << endl;
+        
+    
+        
 		//// --- Get my CD4 count at start --- ////
 		double	h = ((double)rand() / (RAND_MAX));								// Gets a random number between 0 and 1.
 		int i=0;
@@ -421,94 +511,6 @@ void EventMyHIVInfection(person *MyPointerToPerson){
         
         
         
-        // Lets see if ART should start
-        if (*p_GT>=ART_start_yr){
-            
-            // First lets see if they would start ART now
-            
-            // To do so we first need to find year ref for ART data arrays
-            int p_cov=floor(*p_GT)-ART_start_yr;
-            if (*p_GT>2015){p_cov=11;}
-            
-            if (p_cov>11){
-                cout << "GT: " << *p_GT << " p_cov: " << p_cov << endl;
-            }
-            
-            // Lets check if they start ART
-            if (MyPointerToPerson->Age<=1.5){
-                
-                float ART_coverage[11]={0.00435, 0.01024, 0.03817, 0.05674, 0.08456, 0.12762, 0.19595, 0.23988, 0.29309, 0.29978, 0.37502};
-                
-                // Lets see if these kids qualify for ART - ASSUME only newborns start ART (not 2-15 year olds)
-                double art = ((double)rand() / (RAND_MAX));
-                if (art<ART_coverage[p_cov]){ MyPointerToPerson->ART=*p_GT; MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-            }
-            
-            if (MyPointerToPerson->CD4_cat<4){
-                //cout << "Lets check this" << endl;
-            }
-            
-            // Lets evaluate for adults
-            if (MyPointerToPerson->Age>15){
-                
-                // For Men
-                if (MyPointerToPerson->Sex==1){
-                    
-                    float ART_at_CD4_M[12][7]={
-                        {0,         0,          0,          0,          0.02649,	0.01485,	0.01396},
-                        {0,         0,          0,          0,          0.06324,	0.03493,	0.03163},
-                        {0,         0,          0,          0,          0.14185,	0.07740,	0.06815},
-                        {0,         0,          0,          0,          0.18485,	0.09845,	0.08259},
-                        {0,         0,          0,          0,          0.25465,	0.13323,	0.10852},
-                        {0,         0,          0,          0,          0.37316,	0.18916,	0.14558},
-                        {0.02209,	0.01951,	0.01238,	0.00821,	0.43253,	0.20912,	0.14376},
-                        {0.01523,	0.01355,	0.07608,	0.05560,	0.24948,	0.11838,	0.07638},
-                        {0.01691,	0.01510,	0.11378,	0.07907,	0.24297,	0.11511,	0.07166},
-                        {0.01951,	0.01746,	0.14931,	0.09950,	0.25175,	0.12034,	0.07363},
-                        {0.01873,	0.04799,	0.11570,	0.07740,	0.17805,	0.08599,	0.05173},
-                        {0.03897,	0.14904,	0.17234,	0.11260,	0.19358,	0.08522,	0.04824},
-                    };
-                    
-                    double art = ((double)rand() / (RAND_MAX));
-                    if (art<ART_at_CD4_M[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-                    
-                    if (MyPointerToPerson->CD4_cat<4){
-                        //cout << "Lets check this" << endl;
-                        
-                        
-                        
-                        
-                        
-                    }
-                }
-                
-                // For Women
-                if (MyPointerToPerson->Sex==2){
-                    
-                    float ART_at_CD4_F[12][7]={
-                        {0,         0,          0,          0,          0.02511,	0.01399,	0.01320},
-                        {0,         0,          0,          0,          0.06003,	0.03308,	0.03029},
-                        {0,         0,          0,          0,          0.11665,	0.06372,	0.05703},
-                        {0,         0,          0,          0,          0.22836,	0.12237,	0.10487},
-                        {0,         0,          0,          0,          0.33454,	0.17126,	0.13470},
-                        {0,         0,          0,          0,          0.45025,	0.21597,	0.15357},
-                        {0.02937,	0.02652,	0.01729,	0.01182,	0.52829,	0.23224,	0.13967},
-                        {0.01982,	0.01807,	0.09625,	0.07162,	0.29861,	0.12595,	0.07239},
-                        {0.02186,	0.02001,	0.14027,	0.09733,	0.28823,	0.12135,	0.06745},
-                        {0.02509,	0.02306,	0.18195,	0.11913,	0.29281,	0.12401,	0.06674},
-                        {0.03044,	0.05959,	0.14018,	0.09169,	0.20540,	0.08747,	0.04602},
-                        {0.05760,	0.13219,	0.17286,	0.10999,	0.20289,	0.08216,	0.04231},
-                    };
-                    
-                    double art = ((double)rand() / (RAND_MAX));
-                    if (art<ART_at_CD4_F[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-                }
-                
-            }
-            
-        }
-      
-        
     
         //  If they do not start ART then we need to evaluate if they die or decrease in CD4 count
         if (MyPointerToPerson->ART<0){
@@ -532,7 +534,7 @@ void EventMyHIVInfection(person *MyPointerToPerson){
                 
                 double death_test_date = *p_GT +death_test;                     // Get the actual date, not just time until death
                 
-                if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+                if (death_test_date<MyPointerToPerson->DateOfDeath && death_test_date>*p_GT){            // Check HIV deaths happens before natural death
                 
                     MyPointerToPerson->DateOfDeath=death_test_date;
                     
@@ -573,78 +575,7 @@ void EventCD4change(person *MyPointerToPerson){
         MyPointerToPerson->CD4_change.at(MyPointerToPerson->CD4_cat)=*p_GT;
         
         
-        //// --- Lets see if they start ART now --- ////
-        if (*p_GT>=ART_start_yr){
-            
-            // First lets see if they would start ART now
-            
-            // To do so we first need to find year ref for ART data arrays
-            int p_cov=floor(*p_GT)-ART_start_yr;
-            if (*p_GT>2015){p_cov=11;}
-                    
-            // Lets check if they start ART
-            if (MyPointerToPerson->Age<=1.5){
-                
-                float ART_coverage[11]={0.00435, 0.01024, 0.03817, 0.05674, 0.08456, 0.12762, 0.19595, 0.23988, 0.29309, 0.29978, 0.37502};
-                
-                // Lets see if these kids qualify for ART - ASSUME only newborns start ART (not 2-15 year olds)
-                double art = ((double)rand() / (RAND_MAX));
-                if (art<ART_coverage[p_cov]){ MyPointerToPerson->ART=*p_GT; MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-            }
-            
-            // Lets evaluate for adults
-            if (MyPointerToPerson->Age>15){
-                
-                // For Men
-                if (MyPointerToPerson->Sex==1){
-                    
-                    float ART_at_CD4_M[12][7]={
-                        {0,         0,          0,          0,          0.02649,	0.01485,	0.01396},
-                        {0,         0,          0,          0,          0.06324,	0.03493,	0.03163},
-                        {0,         0,          0,          0,          0.14185,	0.07740,	0.06815},
-                        {0,         0,          0,          0,          0.18485,	0.09845,	0.08259},
-                        {0,         0,          0,          0,          0.25465,	0.13323,	0.10852},
-                        {0,         0,          0,          0,          0.37316,	0.18916,	0.14558},
-                        {0.02209,	0.01951,	0.01238,	0.00821,	0.43253,	0.20912,	0.14376},
-                        {0.01523,	0.01355,	0.07608,	0.05560,	0.24948,	0.11838,	0.07638},
-                        {0.01691,	0.01510,	0.11378,	0.07907,	0.24297,	0.11511,	0.07166},
-                        {0.01951,	0.01746,	0.14931,	0.09950,	0.25175,	0.12034,	0.07363},
-                        {0.01873,	0.04799,	0.11570,	0.07740,	0.17805,	0.08599,	0.05173},
-                        {0.03897,	0.14904,	0.17234,	0.11260,	0.19358,	0.08522,	0.04824},
-                    };
-                    
-                    double art = ((double)rand() / (RAND_MAX));
-                    if (art<ART_at_CD4_M[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-                }
-                
-                // For Women
-                if (MyPointerToPerson->Sex==2){
-                    
-                    float ART_at_CD4_F[12][7]={
-                        {0,         0,          0,          0,          0.02511,	0.01399,	0.01320},
-                        {0,         0,          0,          0,          0.06003,	0.03308,	0.03029},
-                        {0,         0,          0,          0,          0.11665,	0.06372,	0.05703},
-                        {0,         0,          0,          0,          0.22836,	0.12237,	0.10487},
-                        {0,         0,          0,          0,          0.33454,	0.17126,	0.13470},
-                        {0,         0,          0,          0,          0.45025,	0.21597,	0.15357},
-                        {0.02937,	0.02652,	0.01729,	0.01182,	0.52829,	0.23224,	0.13967},
-                        {0.01982,	0.01807,	0.09625,	0.07162,	0.29861,	0.12595,	0.07239},
-                        {0.02186,	0.02001,	0.14027,	0.09733,	0.28823,	0.12135,	0.06745},
-                        {0.02509,	0.02306,	0.18195,	0.11913,	0.29281,	0.12401,	0.06674},
-                        {0.03044,	0.05959,	0.14018,	0.09169,	0.20540,	0.08747,	0.04602},
-                        {0.05760,	0.13219,	0.17286,	0.10999,	0.20289,	0.08216,	0.04231},
-                    };
-                    
-                    double art = ((double)rand() / (RAND_MAX));
-                    if (art<ART_at_CD4_F[p_cov][MyPointerToPerson->CD4_cat]){ MyPointerToPerson->ART=*p_GT;MyPointerToPerson->CD4_cat_ARTstart=MyPointerToPerson->CD4_cat;}
-                    
-                }
-                
-            }
-            
-        }
-        
-       
+ 
         
         //// --- When CD4 count hits the lowest possible value and no ART is started --- ////
         if (MyPointerToPerson->CD4_cat==6 && MyPointerToPerson->ART<0){
@@ -659,7 +590,7 @@ void EventCD4change(person *MyPointerToPerson){
             
             double death_test_date = *p_GT +death_test;                      // Get the actual date, not just time until death
             
-            if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+            if (death_test_date<MyPointerToPerson->DateOfDeath && death_test_date>*p_GT){            // Check HIV deaths happens before natural death
                 
                 MyPointerToPerson->DateOfDeath=death_test_date;
                 
@@ -714,7 +645,7 @@ void EventCD4change(person *MyPointerToPerson){
                     
                     double death_test_date = *p_GT +death_test;                      // Get the actual date, not just time until death
                     
-                    if (death_test_date<MyPointerToPerson->DateOfDeath){            // Check HIV deaths happens before natural death
+                    if (death_test_date<MyPointerToPerson->DateOfDeath && death_test_date>*p_GT){            // Check HIV deaths happens before natural death
                         
                         MyPointerToPerson->DateOfDeath=death_test_date;
                         
@@ -765,7 +696,7 @@ void EventMyDepressionDate(person *MyPointerToPerson)		// Function executed when
         TestDeathDate=(MyPointerToPerson->DoB+j);
     }
     
-    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
         
         MyPointerToPerson->DateOfDeath=TestDeathDate;
         
@@ -810,7 +741,7 @@ void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when pe
         TestDeathDate=(MyPointerToPerson->DoB+j);
     }
     
-    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
         
         MyPointerToPerson->DateOfDeath=TestDeathDate;
         
@@ -854,7 +785,7 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
         TestDeathDate=(MyPointerToPerson->DoB+j);
     }
     
-    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
         
         MyPointerToPerson->DateOfDeath=TestDeathDate;
         
@@ -904,7 +835,7 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
             
@@ -1030,7 +961,7 @@ void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when pe
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
             
@@ -1134,7 +1065,7 @@ void EventMyCKDDate (person *MyPointerToPerson)			// Function executed when pers
         TestDeathDate=(MyPointerToPerson->DoB+j);
     }
     
-    if (TestDeathDate<MyPointerToPerson->DateOfDeath){
+    if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
         
         MyPointerToPerson->DateOfDeath=TestDeathDate;
         
