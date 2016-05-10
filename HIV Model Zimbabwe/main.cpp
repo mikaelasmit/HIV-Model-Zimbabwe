@@ -26,7 +26,7 @@
 using namespace std;
 
 
-// TO FIX GENERAL
+// GENERAL TO FIX OR EXPLORE
 // 1. Remove all unecessary code - tidy up
 // 2. When person dies, remove all related events, do something about events that should no longer happen
 // 3. Make various event types (people-specific/annual events,...)
@@ -35,16 +35,10 @@ using namespace std;
 // 6. Make C++ run with Matlab ? THIS IS TAKING A WHILE AND I AM STILL BUSY WITH THIS.  I am going to look at SJ?s code for this
 // 7. Private versus public
 // 8. Think about making your own priortiy queue
-// 9. Think about how to organise this program
-// 10. Think about a parameter document - transfer HIV parameter to seperate file
 
 
 // TO DO List for HIV:
-// 1. Add HIV status using incidence
-// 2. Add HIV natural history (CD4 count)
-// 3. Change mortality once they have HIV and dependant on CD4 coutn
-// 4. Add more aspects of HIV care cascade (diagnosis, start cART,?)
-// 5. Update HIV knowledge based on HIV test
+// 1. Update HIV knowledge based on HIV test
 
 
 // !!!  IMPORTANT NOTES FOR MODEL !!!
@@ -100,11 +94,6 @@ int main(){
     loadNrChildrenProb();
 
     
-    // Load NCD Arrays
-    loadNCDAgeArrayMin();
-    loadNCDAgeArrayMax();
-   
-    
     // Load Large Arrays
     loadBirthArray();
     loadDeathArray_Women();
@@ -112,6 +101,7 @@ int main(){
     loadHIVArray_Women();
     loadHIVArray_Men();
     loadNCDArray();
+    loadCancerArray();
     
     cout << "Section 2 - We finished loading the arrays" << endl;
     
@@ -149,6 +139,7 @@ int main(){
         if (MyArrayOfPointersToPeople[i]->Sex == 2 && MyArrayOfPointersToPeople[i]->Age<50 && MyArrayOfPointersToPeople[i]->AgeAtDeath>=15) {(MyArrayOfPointersToPeople[i])->GetDateOfBaby();}              // --- Assign Birth of all Children- ---
         (MyArrayOfPointersToPeople[i])->GetMyDateOfHIVInfection();          // --- Get date of HIV infection ---
         (MyArrayOfPointersToPeople[i])->GetMyDateNCD();                     // --- Get date of NCDs ---
+        (MyArrayOfPointersToPeople[i])->GetMyDateCancers();                     // --- Get date of NCDs ---
     }
     
     cout << "Section 4 - We finished crating a population" << endl;
@@ -180,11 +171,11 @@ int main(){
     FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-            fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d \n",
+            fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -209,7 +200,15 @@ int main(){
                 MyArrayOfPointersToPeople[i]->CD4_change.at(4),
                 MyArrayOfPointersToPeople[i]->CD4_change.at(5),
                 MyArrayOfPointersToPeople[i]->CD4_change.at(6),
-                MyArrayOfPointersToPeople[i]->CauseOfDeath
+                MyArrayOfPointersToPeople[i]->CauseOfDeath,
+                MyArrayOfPointersToPeople[i]->CKD,
+                MyArrayOfPointersToPeople[i]->Colo,
+                MyArrayOfPointersToPeople[i]->Liver,
+                MyArrayOfPointersToPeople[i]->Oeso,
+                MyArrayOfPointersToPeople[i]->Stomach,
+                MyArrayOfPointersToPeople[i]->OtherCan
+                    
+                    
                     
                 
                 );}

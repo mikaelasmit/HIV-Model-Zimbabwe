@@ -24,6 +24,7 @@ extern int      EndYear;								// Include endyear so that we can avoid putting 
 extern int      *p_PY;									// Pointer to show which year range we are on
 extern          person** MyArrayOfPointersToPeople;		// Pointer to MyArrayOfPointersToPeople
 extern int      nr_NCDs;
+extern int      nr_Cancers;
 extern          priority_queue<event*, vector<event*>, timeComparison> *p_PQ;
 extern          vector<event*> Events;
 
@@ -43,6 +44,9 @@ extern int*     ArrayMax;
 extern double** NCDArray;
 extern int*     NCDAgeArrayMin;
 extern int*     NCDAgeArrayMax;
+extern double** CancerArray;
+extern int*     CancerAgeArrayMin;
+extern int*     CancerAgeArrayMax;
 
 extern double   MortAdj;
 
@@ -73,7 +77,7 @@ person::person()											// First 'person' class second constructor/variable a
     DatesBirth.resize(0);									// This will be used to push in all births of every child
     
     DateOfDeath=9999;										// --- Varibles related to death ---
-    CauseOfDeath=-999;                                      // 0=other, 1=HIV, 2=HT, 3=depressopm, 4=Asthma, 5=Stroke, 6=Diabetes, 7=CKD
+    CauseOfDeath=-999;                                      // 1=other, 2=HIV, 3=HT, 4=depression, 5=Asthma,6=Stroke, 7=Diabetes, 8=CKD,9-colo, 10-liver, 11-Oeso, 12-stomach, 13-other cancer
     AgeAtDeath=-999;										// NOTE: VERY IMPORTANT this number needs to be HIGH as it entres EventQ
     Alive=-999;												// Variable to update eventQ - global check to see if person is still alive
     
@@ -90,12 +94,26 @@ person::person()											// First 'person' class second constructor/variable a
     Stroke=-999;
     Diabetes=-999;
     CKD=-999;
+    
+    Colo=-999;
+    Liver=-999;
+    Oeso=-999;
+    Stomach=-999;
+    OtherCan=-999;
+    
     HT_status=0;
     Depression_status=0;
     Asthma_status=0;
     Stroke_status=0;
     Diabetes_status=0;
     CKD_status=0;
+    
+    Colo_status=0;
+    Liver_status=0;
+    Oeso_status=0;
+    Stomach_status=0;
+    OtherCan_status=0;
+    
     NCD_DatesVector.resize(0);
     
 }
@@ -279,9 +297,7 @@ void person::GetDateOfDeath(){								// This is done by assigning life expactan
         DeathEvent->p_fun = &EventMyDeathDate;
         DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
         p_PQ->push(DeathEvent);
-        
-        // Update cause of death
-        CauseOfDeath=0;
+
     }
     
     E(cout << "We have finished assigning death dates!" << endl;)
@@ -394,6 +410,9 @@ void person::GetMyDateNCD(){
     while (ncd<nr_NCDs){
         double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
         
+        //cout << "R: " << r << " ncd " << ncd << " max index " << NCDArray[ncd][120] << endl;
+        //cout << "DateNCD " << DateNCD << endl;
+        
         
         if (r>NCDArray[ncd][120])                               // If they DO NOT get an NCD set date to -998
         {
@@ -403,33 +422,21 @@ void person::GetMyDateNCD(){
             else if (ncd==3)    {Stroke=-998;}
             else if (ncd==4)    {Diabetes=-998;}
             else if (ncd==5)    {CKD=-998;}
+            DateNCD=-998;
         }
         
         
         if (r<=NCDArray[ncd][120])                              // If they will get and NCD lets get the age and date and also update mortality
         {
             
-            
             // Lets get the index for age at NCD
             int i=0;
             while (r>NCDArray[ncd][i]){i++;}
             
+            
             // Lets get the age and date they will have the NCD
             double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
             DateNCD=DoB+i+YearFraction;
-            
-            if (DateNCD>DateOfDeath && i<50)
-            {
-                while (DateNCD>DateOfDeath)
-                {
-                    double Age_NCD = RandomMinMax(NCDAgeArrayMin[0],NCDAgeArrayMax[0]);     // Lets get the age they will develop the NCD
-                    double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
-                    Age_NCD=Age_NCD+YearFraction;
-                    DateNCD=DoB+Age_NCD;
-                }
-                
-            }
-            
             
             
             if (ncd==0)
@@ -445,6 +452,7 @@ void person::GetMyDateNCD(){
                     HTEvent->person_ID = MyArrayOfPointersToPeople[p];
                     p_PQ->push(HTEvent);
                 }
+                //cout << "Date HT " << DateNCD << " or " << HT << endl;
             }
             
             
@@ -524,8 +532,6 @@ void person::GetMyDateNCD(){
                     p_PQ->push(CKDEvent);
                 }
             }
-
-        
         }
        
         NCD_DatesVector.push_back(DateNCD);
@@ -534,6 +540,137 @@ void person::GetMyDateNCD(){
     }
     E(cout << "We finished assigning NCDs!" << endl;)
 }
+
+
+// --- Assign Cancer  ---
+void person::GetMyDateCancers(){
+    
+    E(cout << endl << endl << "We are assigning Cancers!" << endl;)
+    
+    // Some basic code and finding index for not getting NCDs
+    int cancer=0;                                                  // Assisgn all the possible NCDs in this code
+    double DateCancer=-997;
+        
+        
+    // Lets get the dates for the NCDs
+    while (cancer<nr_Cancers){
+        
+        double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+        
+        if (r>CancerArray[cancer][120])                               // If they DO NOT get an NCD set date to -998
+        {
+            if      (cancer==0)    {Colo=-998;}
+            else if (cancer==1)    {Liver=-998;}
+            else if (cancer==2)    {Oeso=-998;}
+            else if (cancer==3)    {Stomach=-998;}
+            else if (cancer==4)    {OtherCan=-998;}
+            
+        }
+            
+            
+        if (r<=CancerArray[cancer][120])                              // If they will get and NCD lets get the age and date and also update mortality
+        {
+            // Lets get the index for age at NCD
+            int i=0;
+            while (r>CancerArray[cancer][i]){i++;}
+            
+            
+            // Lets get the age and date they will have the NCD
+            double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+            DateCancer=DoB+i+YearFraction;
+            
+                            
+            if (cancer==0)
+            {
+                Colo=DateCancer;
+                //// --- Lets feed Hypertension into the eventQ --- ////
+                if (Colo>=*p_GT && Colo<EndYear){
+                    int p=PersonID-1;
+                    event * ColoEvent = new event;
+                    Events.push_back(ColoEvent);
+                    ColoEvent->time = Colo;
+                    ColoEvent->p_fun = &EventMyColoDate;
+                    ColoEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(ColoEvent);
+                }
+            }
+                
+                
+            else if (cancer==1)
+            {
+                Liver=DateCancer;
+                //// --- Lets feed Hypercholesterolaemia into the eventQ --- ////
+                if (Liver>=*p_GT && Liver<EndYear){
+                    int p=PersonID-1;
+                    event * LiverEvent = new event;
+                    Events.push_back(LiverEvent);
+                    LiverEvent->time = Liver;
+                    LiverEvent->p_fun = &EventMyLiverDate;
+                    LiverEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(LiverEvent);
+                }
+            }
+                
+                
+            else if (cancer==2)
+            {
+                Oeso=DateCancer;
+                //// --- Lets feed Hypertension into the eventQ --- ////
+                if (Oeso>=*p_GT && Oeso<EndYear){
+                    int p=PersonID-1;
+                    event * OesoEvent = new event;
+                    Events.push_back(OesoEvent);
+                    OesoEvent->time = Oeso;
+                    OesoEvent->p_fun = &EventMyOesoDate;
+                    OesoEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(OesoEvent);
+                }
+            }
+                
+            else if (cancer==3)
+            {
+                Stomach=DateCancer;
+                //// --- Lets feed Stroke into the eventQ --- ////
+                if (Stomach>=*p_GT && Stomach<EndYear){
+                    int p=PersonID-1;
+                    event * StomachEvent = new event;
+                    Events.push_back(StomachEvent);
+                    StomachEvent->time = Stomach;
+                    StomachEvent->p_fun = &EventMyStomachDate;
+                    StomachEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(StomachEvent);
+                }
+            }
+                
+                
+            else if (cancer==4)
+            {
+                OtherCan=DateCancer;
+                //// --- Lets feed MI into the eventQ --- ////
+                if (OtherCan>=*p_GT && OtherCan<EndYear){
+                    int p=PersonID-1;
+                    event * OtherCanEvent = new event;
+                    Events.push_back(OtherCanEvent);
+                    OtherCanEvent->time = OtherCan;
+                    OtherCanEvent->p_fun = &EventMyOtherCanDate;
+                    OtherCanEvent->person_ID = MyArrayOfPointersToPeople[p];
+                    p_PQ->push(OtherCanEvent);
+                }
+            }
+                
+        }
+            
+        NCD_DatesVector.push_back(DateCancer);
+        cancer++;                                                                      // Lets do the next NCD
+    }
+    E(cout << "We finished assigning Cancers!" << endl;)
+}
+
+
+
+
+
+
 
 
 

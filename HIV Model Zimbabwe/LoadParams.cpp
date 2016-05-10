@@ -27,6 +27,7 @@ double** DeathArray_Men;
 double** HIVArray_Women;
 double** HIVArray_Men;
 double** NCDArray;
+double** CancerArray;
 
 // HIV Arrays
 double*** CD4_startarray;
@@ -42,10 +43,8 @@ int*      ArrayMin;
 int*      ArrayMax;
 
 // NCD Arrays
-int*      NCDAgeArrayMin;
-int*      NCDAgeArrayMax;
-//double**  NCDArray;
-int nr_NCDs=5;                                         // Change this as you need to
+int nr_NCDs=6;                                         // Change this as you need to
+int nr_Cancers=5;
 
 
 //// --- Load parameters --- ////
@@ -588,181 +587,6 @@ void loadAgeMax()
 
 
 
-void loadNCDAgeArrayMin()
-{
-    E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
-    
-    // 1. make a param reader object.
-    CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
-    if(! myReader.setNewFileName(fileName))
-    {
-        cout << "File " << fileName << " doesn't exist." << endl;
-        exit(0);
-    }
-    E(cout << "File " << fileName << " successfully added.  " << endl;)
-    
-    
-    // Some essential variables
-    char ParamName[] = "NCDAgeArrayMin";                // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                        // These will provide all the correct dimensions
-    int nr_rows;
-    int nr_columns;
-    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
-    vector<double> data;
-    
-    
-    // Lets load the data
-    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
-    
-    
-    // Lets convert to an array
-    // A. First by converting char* myValue to a vector
-    ss << myValue;
-    double a;
-    while (ss >> a){data.push_back(a);}
-    
-    
-    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
-    int col=nr_columns;
-    
-    
-    // Lets make the *** Array
-    NCDAgeArrayMin= new int [col];
-    
-    for (int i=0; i<col; i++){
-        NCDAgeArrayMin[i]=data[i];
-        //cout << "I: " << i << " I: " << i << endl;
-        //cout << "NCDAgeArrayMin " << NCDAgeArrayMin[i] << endl;
-    }
-    E(cout<< "The NCDAgeArrayMin Parameter has been loaded" << endl;)
-}
-
-
-
-void loadNCDAgeArrayMax()
-{
-    E(cout<< "The NCDAgeArrayMax Parameter is being loaded" << endl;)
-    
-    // 1. make a param reader object.
-    CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
-    if(! myReader.setNewFileName(fileName))
-    {
-        cout << "File " << fileName << " doesn't exist." << endl;
-        exit(0);
-    }
-    E(cout << "File " << fileName << " successfully added.  " << endl;)
-    
-    
-    // Some essential variables
-    char ParamName[] = "NCDAgeArrayMax";                // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                        // These will provide all the correct dimensions
-    int nr_rows;
-    int nr_columns;
-    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
-    vector<double> data;
-    
-    
-    // Lets load the data
-    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
-    
-    
-    // Lets convert to an array
-    // A. First by converting char* myValue to a vector
-    ss << myValue;
-    double a;
-    while (ss >> a){data.push_back(a);}
-    
-    
-    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
-    int col=nr_columns;
-    
-    
-    // Lets make the * Array
-    NCDAgeArrayMax= new int [col];
-    
-    for (int i=0; i<col; i++){
-        NCDAgeArrayMax[i]=data[i];
-        //cout << "I: " << i << " I: " << i << endl;
-        //cout << "NCDAgeArrayMax " << NCDAgeArrayMax[i] << endl;
-    }
-    E(cout<< "The NCDAgeArrayMax Parameter has been loaded" << endl;)
-}
-
-
-
-/*void loadNCDArray()
-{
-    E(cout<< "The NCDArray Parameter is being loaded" << endl;)
-    
-    // 1. make a param reader object.
-    CParamReader myReader;
-    char fileName[] = "/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/LoadParam.txt";
-    if(! myReader.setNewFileName(fileName))
-    {
-        cout << "File " << fileName << " doesn't exist." << endl;
-        exit(0);
-    }
-    E(cout << "File " << fileName << " successfully added.  " << endl;)
-    
-    
-    // Some essential variables
-    char ParamName[] = "NCDArray";                      // Insert correct paramname CAREFUL: match spelling EXACTLY
-    int length ;                                        // These will provide all the correct dimensions
-    int nr_rows;
-    int nr_columns;
-    stringstream ss;                                    // These will be needed to convert from a) char* to vector and b) from vector to array
-    vector<double> data;
-    
-    
-    // Lets load the data
-    char* myValue = myReader.getParamString(ParamName,length, nr_rows, nr_columns);
-    //cout << endl << endl << "FINAL!!!: " << endl << ParamName << " = " << endl <<  " " << myValue << endl << "length = " << length << " nr_columns: " << nr_columns << " nr_rows: " << nr_rows << endl;
-    int nr_Conditions=nr_rows;
-    nr_NCDs=nr_Conditions;
-    cout <<nr_NCDs << endl;
-    
-    
-    // Lets convert to an array
-    // A. First by converting char* myValue to a vector
-    ss << myValue;
-    double a;
-    while (ss >> a){data.push_back(a);}
-    
-    
-    // B. Second convert vector to array                // CAREFUL: This bit needs to be adapted according to if it is a 2D or 3D array!!
-    int row=nr_rows;
-    int col=nr_columns;
-    
-    
-    // Lets make the *** Array
-    NCDArray = new double *[row];
-    for (int i=0; i<row; i++)
-    {
-        NCDArray[i] = new double [col];
-    }
-    
-    for (int j=0; j<row; j++){
-        for (int i=0; i<col; i++){
-            int NElement=i+(j*col);
-            NCDArray[j][i]=data[NElement];
-            //cout << " J: " << j << " and i: " << i << endl;
-            //cout << "NElement: " << NElement << " data x: " << data[NElement] << " and NCDArray " << NCDArray[j][i] << endl;
-        }
-    }
-
-    
-    E(cout<< "The NCDArray Parameter has been loaded" << endl;)
-}
-
-*/
-
-
-
-
 
 
 
@@ -773,9 +597,9 @@ void loadNCDAgeArrayMax()
 
 
 
-///////////////////////////
+/////////////////////
 // -- NCD Array -- //
-///////////////////////////
+/////////////////////
 
 void loadNCDArray(){
     
@@ -797,8 +621,8 @@ void loadNCDArray(){
     
     // Else lets load the Array
     E(cout << "File " << &myfile << " successfully added" << endl;)
-    NCDArray = new double *[5];
-    for (int row = 0; row<5; row++){				// This loop will read in every number to the right place
+    NCDArray = new double *[nr_NCDs];
+    for (int row = 0; row<nr_NCDs; row++){				// This loop will read in every number to the right place
         string line;
         getline(myfile, line);
         stringstream iss(line);
@@ -815,6 +639,53 @@ void loadNCDArray(){
     
     
     E(cout << "NCDArray array has been read in successfully! " << endl;)
+}
+
+
+
+////////////////////////
+// -- Cancer Array -- //
+////////////////////////
+
+void loadCancerArray(){
+    
+    E(cout << "Lets load the Cancer array. " << endl;)
+    ifstream myfile("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe/CancerArray.csv");
+    
+    
+    // Lets include an error message in case file is not found
+    if (!myfile.is_open())
+    {
+        cout << "ERROR: The file CancerArray was not found!" << endl;
+        exit(0);
+    }
+    else if (myfile.bad())
+    {
+        cout << "ERROR: The file CancerArray was bad!" << endl;
+        exit(0);
+    }
+    
+    // Else lets load the Array
+    E(cout << "File " << &myfile << " successfully added" << endl;)
+    CancerArray = new double *[5];
+    for (int row = 0; row<5; row++){				// This loop will read in every number to the right place
+        string line;
+        getline(myfile, line);
+        stringstream iss(line);
+        
+        
+        CancerArray[row]=new double[121];
+        for (int col = 0; col<121; col++){
+            string val;
+            getline (iss, val, ',');
+            stringstream convertor(val);
+            convertor >>  CancerArray[row][col];
+            //cout << "testing " << CancerArray[row][col] << " col " << col << " row  " << row << endl;
+        }
+    }
+    
+    
+    E(cout << "CancerArray array has been read in successfully! " << endl;)
 }
 
 

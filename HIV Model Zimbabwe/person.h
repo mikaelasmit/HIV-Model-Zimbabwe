@@ -32,7 +32,7 @@ public:
     vector<double> DatesBirth;						// Hold dates of the birth of all children - vector
     
     double DateOfDeath;								// -- Variables related to death --
-    int CauseOfDeath;
+    int CauseOfDeath;                               // 1- normal, 2-hiv, 3-ht, 4-depression, 5-asthma, 6-stroke, 7-diabetes, 8-ckd, 9-colo, 10-liver, 11-Oeso, 12-stomach, 13-other cancer
     int Alive;
     int AgeAtDeath;
     
@@ -55,6 +55,18 @@ public:
     int Diabetes_status;
     double CKD;
     int CKD_status;
+    
+    double Colo;
+    int Colo_status;
+    double Liver;
+    int Liver_status;
+    double Oeso;
+    int Oeso_status;
+    double Stomach;
+    int Stomach_status;
+    double OtherCan;
+    int OtherCan_status;
+    
     vector<double> NCD_DatesVector;
     
     
@@ -91,6 +103,9 @@ public:
     
     // --- Date of NCDs ---
     void GetMyDateNCD();
+    
+    // --- Date of Cancers ---
+    void GetMyDateCancers();
     
     
 };	

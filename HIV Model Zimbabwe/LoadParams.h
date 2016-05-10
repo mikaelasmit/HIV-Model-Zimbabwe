@@ -18,6 +18,7 @@ void loadDeathArray_Men();
 void loadHIVArray_Women();
 void loadHIVArray_Men();
 void loadNCDArray();
+void loadCancerArray();
 
 
 //// --- Shorter Parameter Arrays --- ////
@@ -35,6 +36,9 @@ void loadAgeMax();
 
 void loadNCDAgeArrayMin();
 void loadNCDAgeArrayMax();
+
+void loadCancerAgeArrayMin();
+void loadCancerAgeArrayMax();
 
 
 
