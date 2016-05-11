@@ -69,28 +69,9 @@ double Risk_HTCVD=1.26;
 
 
 /// --- Mortality for NCDs Parameters --- ///
-extern double one;
-extern double two;
-extern double three;
-extern double four;
-extern double five;
-extern double six;
-extern double seven;
-extern double eight;
-extern double nine;
-extern double ten;
-extern double eleven;
-extern double twelve;
-
-extern double MortRisk[6];
-extern double MortRisk_Cancer[5];
-extern double MortAdj;
-
-
-
-//double MortRisk[6]= {0.08, 0, 0.85, 1.3, 1.1, 0.8}; //{0.087, 0, 1.4, 670.87, 12.23, 5};         // Original values from Smith et al Factors associated with : 1.52 (HT), 1.77 (diabetes)
-//double MortRisk_Cancer[5]= {1, 1, 1, 1, 1.05};                   //{0.087, 0, 1.4, 670.87, 12.23};   // Both this and above needs to be fitted
-//double MortAdj=0.75;                                           // Adjustment to reduce background mortality rate
+double MortRisk[6]= {0.08, 0, 0.85, 1.3, 1.1, 0.8}; //{0.087, 0, 1.4, 670.87, 12.23, 5};         // Original values from Smith et al Factors associated with : 1.52 (HT), 1.77 (diabetes)
+double MortRisk_Cancer[5]= {1, 1, 1, 1, 1.05};                   //{0.087, 0, 1.4, 670.87, 12.23};   // Both this and above needs to be fitted
+double MortAdj=0.75;                                           // Adjustment to reduce background mortality rate
 
 
 /// --- HIV Increased risk for NCD Parameter --- ///
@@ -181,8 +162,6 @@ int countKIDSHIVRef=0;
 int Elig_Men=0;
 int Elig_Women=0;
 int Elig_Kids=0;
-
-extern int n;
 
 
 
@@ -298,28 +277,6 @@ void EventTellNewYear(person *MyPointerToPerson){
 	RecurrentTellNewYear->time = *p_GT + 1;										
 	RecurrentTellNewYear->p_fun = &EventTellNewYear;
 	p_PQ->push(RecurrentTellNewYear);
-    
-    
-    if (*p_GT==1950 && n>0)
-    {
-        for (int a=0; a<50000; a++)
-        {
-            HIV_Ref_PersonID[a]={};
-            KIDS_HIV_Ref_PersonID[a]={};
-
-            
-            if (HIV_Ref_PersonID[a]>0)
-            {
-                cout <<  "Adults " << HIV_Ref_PersonID[a] << " and " << a << endl;
-            }
-            if (KIDS_HIV_Ref_PersonID[a]>0)
-            {
-                cout << "KIds " << KIDS_HIV_Ref_PersonID[a] << " and " << a << endl;}
-            
-            //delete KIDS_HIV_Ref_PersonID[a];
-        }
-    }
-
 
 	E(cout << "We have finished telling you the new year and setting fertility variables for the year." << endl;)	// Error message - can be switched on/off
 }

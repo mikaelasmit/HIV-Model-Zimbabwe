@@ -16,8 +16,6 @@
 #include "LoadParams.h"
 #include "CParamReader.hpp"
 
-#include "RunModel.hpp"
-
 #include <fstream>									// some important libraries for reading in the arrays
 #include <vector>
 #include <string>
@@ -53,7 +51,7 @@ using namespace std;
 
 
 //// --- MAIN PARAMETERS - CENTRALLY AVAILABLE --- ////
-/*double *p_GT;																// Pointer to global time
+double *p_GT;																// Pointer to global time
 int *p_PY;																	// Pointer to show which year range we are on
 int PY=0;																	// Set the first pointer to year range reference to 0
 double StartYear=1950;														// Define Start Year if the model and set it to year of choice
@@ -70,90 +68,11 @@ priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to e
 person** MyArrayOfPointersToPeople = new person*[final_number_people];		// First 'person*' is a pointer (address) and 'new person' and space for x person which will point to actual person below
 vector<event *> Events;
 
-int ART_start_yr=2004;*/
-
-
-// THIS IS FOR FITTING ONLY - REOMVE ONCE DONE
-double one;
-double two;
-double three;
-double four;
-double five;
-double six;
-double seven;
-double eight;
-double nine;
-double ten;
-double eleven;
-double twelve;
-
-double MortRisk[6];
-double MortRisk_Cancer[5];
-double MortAdj;
-
-double minLik;
-int n;
-
-
-//double RandomMinMax_3(int min, int max){							// Provide function for random number generator between min and max number
-//    return rand()%(max-min+1)+min;							    // !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
-//}
-
+int ART_start_yr=2004;
 
 
 //// --- RUN THE MAIN MODEL --- ////
 int main(){
-    
-    minLik=150;
-    n=0;
-    cout << "New Model run!!!! MinLik " << minLik << endl;
-    
-    while (n<1000)
-    
-    {
-        if (minLik>55)
-        {
-            cout << "New Model run!!!! MinLik " << minLik << endl;
-            RunModel();
-            
-        }
-        
-        n++;
-    }
-    
-        
-        
-        
-/*
- // Lets do some fitting!
-    one   = RandomMinMax_3(1, 100)/100;
-    two   = 0;
-    three = RandomMinMax_3(1, 200)/100;
-    four  = RandomMinMax_3(1, 200)/100;
-    five  = RandomMinMax_3(1, 200)/100;
-    six   = RandomMinMax_3(1, 200)/100;
-    seven = RandomMinMax_3(1, 200)/100;
-    eight = RandomMinMax_3(1, 200)/100;
-    nine  = RandomMinMax_3(1, 200)/100;
-    ten   = RandomMinMax_3(1, 200)/100;
-    eleven= RandomMinMax_3(1, 200)/100;
-    twelve= RandomMinMax_3(50, 100)/100;
-        
-    MortRisk[0]= one;
-    MortRisk[1]= two;
-    MortRisk[2]= three;
-    MortRisk[3]= four;
-    MortRisk[4]= five;
-    MortRisk[5]= six;
-        
-    MortRisk_Cancer[0] = seven;
-    MortRisk_Cancer[1] = eight;
-    MortRisk_Cancer[2] = nine;
-    MortRisk_Cancer[3] = ten;
-    MortRisk_Cancer[4] = eleven;
-        
-    MortAdj = twelve;
-   
     
     cout << "Hello, Mikaela!" << endl << endl ;								// Check if model is running
     
@@ -250,7 +169,7 @@ int main(){
     
     
     //// --- Output the results in a csv file --- ////
-    FILE* ProjectZim;
+    /*FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
     ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
@@ -294,8 +213,9 @@ int main(){
                     
                 
                 );}
-    fclose(ProjectZim);
-        
+    fclose(ProjectZim);*/
+    
+    
 
         
     // COUNT OUTPUT FOR FITTING
@@ -345,20 +265,19 @@ int main(){
     double OtherCan_d   =3.1;
         
     // Output the model percentages
-    cout << endl << "Printing the percentages:" << endl;
-    cout << background_m << endl;
-    cout << HIV_m << endl;
-    cout << HT_m << endl;
-    cout << Depression_m << endl;
-    cout << Asthma_m << endl;
-    cout << Stroke_m << endl;
-    cout << Diabetes_m << endl;
-    cout << CKD_m << endl;
-    cout << Colo_m << endl;
-    cout << Liver_m << endl;
-    cout << Oeso_m << endl;
-    cout << Stomach_m << endl;
-    cout << OtherCan_m << endl;
+    cout << "Background " << background_m << endl;
+    cout << "HIV "        << HIV_m << endl;
+    cout << "HT "         << HT_m << endl;
+    cout << "Depression " << Depression_m << endl;
+    cout << "Asthma "     << Asthma_m << endl;
+    cout << "Stroke "     << Stroke_m << endl;
+    cout << "Diabetes "   << Diabetes_m << endl;
+    cout << "CKD "        << CKD_m << endl;
+    cout << "Colo "       << Colo_m << endl;
+    cout << "Liver "      << Liver_m << endl;
+    cout << "Oeso "       << Oeso_m << endl;
+    cout << "Stomach "    << Stomach_m << endl;
+    cout << "OtherCan "   << OtherCan_m << endl;
         
     // Least square calculation
     double sum_MinLik=  pow ((background_m  - background_d),2) +
@@ -375,41 +294,17 @@ int main(){
                         pow ((Stomach_m     - Stomach_d),2) +
                         pow ((OtherCan_m    - OtherCan_d),2);
         
-        double background_MinLik =  pow ((background_m  - background_d),2);
-        double HIV_MinLik        =  pow ((HIV_m         - HIV_d),2);
-        double HT__MinLik        =  pow ((HT_m          - HT_d),2);
-        double Depression_MinLik =  pow ((Depression_m  - Depression_d),2);
-        double Asthma__MinLik    =  pow ((Asthma_m      - Asthma_d),2);
-        double Stroke_MinLik     =  pow ((Stroke_m      - Stroke_d),2);
-        double Diabetes_MinLik   =  pow ((Diabetes_m    - Diabetes_d),2);
-        double CKD_MinLik        =  pow ((CKD_m         - CKD_d),2);
-        double Colo_MinLik       =  pow ((Colo_m        - Colo_d),2);
-        double Liver_MinLik      =  pow ((Liver_m       - Liver_d),2);
-        double Oeso_MinLik       =  pow ((Oeso_m        - Oeso_d),2);
-        double Stomach_MinLik    =  pow ((Stomach_m     - Stomach_d),2);
-        double OtherCan_MinLik   =  pow ((OtherCan_m    - OtherCan_d),2);
+
         
-        cout << endl << "Printing the variable values " << endl;
-        cout << one << endl;
-        cout << two << endl;
-        cout << three << endl;
-        cout << four << endl;
-        cout << five << endl;
-        cout << six << endl;
-        cout << seven << endl;
-        cout << eight << endl;
-        cout << nine << endl;
-        cout << ten << endl;
-        cout << eleven << endl;
-        cout << twelve << endl;
-        
-        cout << "Least Square output " << sum_MinLik << endl;
+    cout << "test output " << sum_MinLik << endl;
     
-        minLik=sum_MinLik;
-        n++;
-        
-        
-        
+    FILE* FMin_Zim;
+    FMin_Zim = fopen("/Users/Mikaela/Dropbox/HIV Model Zimbabwe/HIV Model Zimbabwe\FMin_Zim.csv","w");
+    
+    
+    fprintf(FMin_Zim, "%f \n",sum_MinLik);
+    fclose(FMin_Zim);
+    
     
     //// --- LETS AVOID MEMORY LEAKS AND DELETE ALL NEW EVENTS --- ////
     cout << "Lets delete the heap! " << endl;
@@ -428,8 +323,5 @@ int main(){
     system("pause");
     return 0;
         
-        
-        
-    
-    } // End fitting code*/
-};
+
+}

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		73627E511CE256A200A8C1D7 /* RunModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73627E4F1CE256A200A8C1D7 /* RunModel.cpp */; };
 		73BD22161C58F94800BC7AC6 /* CParamReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73BD22151C58F94800BC7AC6 /* CParamReader.cpp */; };
 		73BD22301C58F96100BC7AC6 /* event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73BD221B1C58F96100BC7AC6 /* event.cpp */; };
 		73BD22311C58F96100BC7AC6 /* eventfunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73BD221D1C58F96100BC7AC6 /* eventfunctions.cpp */; };
@@ -30,8 +29,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		73627E4F1CE256A200A8C1D7 /* RunModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RunModel.cpp; sourceTree = "<group>"; };
-		73627E501CE256A200A8C1D7 /* RunModel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RunModel.hpp; sourceTree = "<group>"; };
 		73BD220A1C58F87C00BC7AC6 /* HIV Model Zimbabwe */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "HIV Model Zimbabwe"; sourceTree = BUILT_PRODUCTS_DIR; };
 		73BD22151C58F94800BC7AC6 /* CParamReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CParamReader.cpp; sourceTree = "<group>"; };
 		73BD22191C58F96100BC7AC6 /* CParamReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CParamReader.hpp; sourceTree = "<group>"; };
@@ -111,8 +108,6 @@
 				73BD222C1C58F96100BC7AC6 /* person.cpp */,
 				73BD222D1C58F96100BC7AC6 /* person.h */,
 				73BD222E1C58F96100BC7AC6 /* Test.txt */,
-				73627E4F1CE256A200A8C1D7 /* RunModel.cpp */,
-				73627E501CE256A200A8C1D7 /* RunModel.hpp */,
 			);
 			path = "HIV Model Zimbabwe";
 			sourceTree = "<group>";
@@ -176,7 +171,6 @@
 				73BD22301C58F96100BC7AC6 /* event.cpp in Sources */,
 				73BD22311C58F96100BC7AC6 /* eventfunctions.cpp in Sources */,
 				73BD22331C58F96100BC7AC6 /* LoadParams.cpp in Sources */,
-				73627E511CE256A200A8C1D7 /* RunModel.cpp in Sources */,
 				73BD22161C58F94800BC7AC6 /* CParamReader.cpp in Sources */,
 				73BD22321C58F96100BC7AC6 /* eventQ.cpp in Sources */,
 				73BD22351C58F96100BC7AC6 /* person.cpp in Sources */,
