@@ -176,7 +176,7 @@ void person::GetDateOfBaby(){								// This method already calculates the child
         //cout << " random " << r_nr << " nr " << NrChildrenArray[0][index] << " nr " << NrChildrenArray[0][index]-1 << endl;
         
         
-        if (r_nr<NrChildrenProb[index]){NrChildren=NrChildrenArray[0][index]-1;}
+        if (r_nr<NrChildrenProb[index]){NrChildren=NrChildrenArray[0][index];}
         if (r_nr>=NrChildrenProb[index]){NrChildren=NrChildrenArray[1][index];}
         
         
@@ -585,18 +585,18 @@ void person::GetMyDateCancers(){
         
         double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
         
-        if (r>CancerArray[cancer][120])                               // If they DO NOT get an NCD set date to -998
+        if (r>CancerArray[cancer][120])                             // If they DO NOT get an NCD set date to -998
         {
             if      (cancer==0)    {Colo=-998;}
             else if (cancer==1)    {Liver=-998;}
             else if (cancer==2)    {Oeso=-998;}
             else if (cancer==3)    {Stomach=-998;}
             else if (cancer==4)    {OtherCan=-998;}
-            
+            //cout << "Not getting cancer first time" << endl;
         }
         
         
-        if (r<=CancerArray[cancer][120])                              // If they will get and NCD lets get the age and date and also update mortality
+        if (r<=CancerArray[cancer][120])                            // If cancer: lets get age and date
         {
             // Lets get the index for age at NCD
             int i=0;
@@ -604,8 +604,69 @@ void person::GetMyDateCancers(){
             
             
             // Lets get the age and date they will have the NCD
-            double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+            double YearFraction=(RandomMinMax(1,12))/12.1;          // This gets month of birth as a fraction of a year
             DateCancer=DoB+i+YearFraction;
+            AgeAtDeath=DateOfDeath-DoB;
+            
+            //cout << "DateOfCancer" << DateCancer << " date of death " << DateOfDeath << endl;
+            
+            while (DateCancer>DateOfDeath){
+                
+                
+                
+                double r = ((double) rand() / (RAND_MAX));          // Get a random number for each NCD
+                
+                if (r>CancerArray[cancer][120] && cancer<4 && cancer>0)                     // If they DO NOT get an NCD set date to -998
+                {
+                    if      (cancer==0)    {Colo=-998;}
+                    else if (cancer==1)    {Liver=-998;}
+                    else if (cancer==2)    {Oeso=-998;}
+                    else if (cancer==3)    {Stomach=-998;}
+                    else if (cancer==4)    {OtherCan=-998;}
+                    DateCancer=-998;
+                    //cout << "Not getting cancer second time" << endl;
+                }
+                
+                if (r>CancerArray[cancer][120] && cancer==0 && AgeAtDeath<40)                     // If they DO NOT get an NCD set date to -998
+                {
+                    if      (cancer==0)    {Colo=-998;}
+                    else if (cancer==1)    {Liver=-998;}
+                    else if (cancer==2)    {Oeso=-998;}
+                    else if (cancer==3)    {Stomach=-998;}
+                    else if (cancer==4)    {OtherCan=-998;}
+                    DateCancer=-998;
+                    //cout << "Not getting cancer second time" << endl;
+                }
+                
+                if (r>CancerArray[cancer][120] && cancer==4 && AgeAtDeath<40)                     // If they DO NOT get an NCD set date to -998
+                {
+                    if      (cancer==0)    {Colo=-998;}
+                    else if (cancer==1)    {Liver=-998;}
+                    else if (cancer==2)    {Oeso=-998;}
+                    else if (cancer==3)    {Stomach=-998;}
+                    else if (cancer==4)    {OtherCan=-998;}
+                    DateCancer=-998;
+                    //cout << "Not getting cancer second time" << endl;
+                }
+                
+                
+                if (r<=CancerArray[cancer][120])                    // If cancer: lets get age and date
+                {
+                    // Lets get the index for age at NCD
+                    int i=0;
+                    while (r>CancerArray[cancer][i]){i++;}
+                    
+                    
+                    // Lets get the age and date they will have the NCD
+                    double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                    DateCancer=DoB+i+YearFraction;
+                }
+                
+                //cout << "DateOfCancer" << DateCancer << " date of death " << DateOfDeath << endl;
+            }
+        }
+        
+         if (DateCancer>0){
             
             
             if (cancer==0)

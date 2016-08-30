@@ -100,18 +100,19 @@ int main(){
     
     cout << "Testing changes" << endl;
     // Lets do some fitting!
-    one   = RandomMinMax_3(1, 100)/1000;
-    two   = 0;
-    three = RandomMinMax_3(50, 150)/100;
-    four  = RandomMinMax_3(80, 150)/100;
-    five  = RandomMinMax_3(80, 150)/100;
-    six   = RandomMinMax_3(50, 150)/100;
-    seven = RandomMinMax_3(80, 150)/100;
-    eight = RandomMinMax_3(80, 150)/100;
-    nine  = RandomMinMax_3(80, 150)/100;
-    ten   = RandomMinMax_3(80, 150)/100;
-    eleven= RandomMinMax_3(80, 150)/100;
-    twelve= RandomMinMax_3(50, 100)/100;
+    one   = RandomMinMax_3(100, 100)/1000;
+    two   = RandomMinMax_3(100, 100)/1000;
+    three = RandomMinMax_3(100, 100)/100;
+    four  = RandomMinMax_3(100, 100)/100;
+    cout << "Strok Risk " << four << endl;
+    five  = RandomMinMax_3(100, 100)/100;
+    six   = RandomMinMax_3(100, 100)/100;
+    seven = RandomMinMax_3(100, 100)/100;
+    eight = RandomMinMax_3(100, 100)/100;
+    nine  = RandomMinMax_3(100, 100)/100;
+    ten   = RandomMinMax_3(100, 100)/100;
+    eleven= RandomMinMax_3(100, 100)/100;
+    twelve= RandomMinMax_3(100, 100)/100;
     
     MortRisk[0]= one;
     MortRisk[1]= two;
@@ -228,12 +229,12 @@ int main(){
     FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
     
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f \n",
+        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %d, \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -264,7 +265,8 @@ int main(){
                 MyArrayOfPointersToPeople[i]->Liver,
                 MyArrayOfPointersToPeople[i]->Oeso,
                 MyArrayOfPointersToPeople[i]->Stomach,
-                MyArrayOfPointersToPeople[i]->OtherCan
+                MyArrayOfPointersToPeople[i]->OtherCan,
+                MyArrayOfPointersToPeople[i]->Stroke_status
                 
                 
                 

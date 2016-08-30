@@ -185,11 +185,11 @@ void EventTellNewYear(person *MyPointerToPerson){
         
         
         // Add people on ART until we hit our aim
-        while (count_ARTKids<ARTKids[ART_index] || 1.1*count_ARTMen_sum<ARTMen_sum[ART_index] || 1.1*count_ARTWomen_sum<ARTWomen_sum[ART_index]){
+        while (count_ARTKids<ARTKids[ART_index] || 1.2*count_ARTMen_sum<ARTMen_sum[ART_index] || 1.2*count_ARTWomen_sum<ARTWomen_sum[ART_index]){
             
             //cout << endl << "KIDS: There have " << Elig_Kids << " eligible kids and we need to reach " << ARTKids[ART_index] << " and only have " << count_ARTKids   << endl;
-            //cout << "Men: There have " << Elig_Men << " eligible men and we need to reach " << ARTMen_sum[ART_index] << " and only have " << count_ARTMen_sum << " times 10% " << 1.1*count_ARTMen_sum << endl;
-            //cout << "Women: There have " << Elig_Women << " eligible women and we need to reach " << ARTWomen_sum[ART_index] << " and only have " << count_ARTWomen_sum << " times 10% " << 1.1*count_ARTWomen_sum<< endl;
+            //cout << "Men: There have " << Elig_Men << " eligible men and we need to reach " << ARTMen_sum[ART_index] << " and only have " << count_ARTMen_sum << " times 10% " << 1.2*count_ARTMen_sum << endl;
+            //cout << "Women: There have " << Elig_Women << " eligible women and we need to reach " << ARTWomen_sum[ART_index] << " and only have " << count_ARTWomen_sum << " times 10% " << 1.2*count_ARTWomen_sum<< endl;
             
             
             if (count_ARTKids<ARTKids[ART_index] ){
@@ -213,7 +213,7 @@ void EventTellNewYear(person *MyPointerToPerson){
             
             
             // Lets see if adults start ART
-            if (1.1*count_ARTMen_sum<ARTMen_sum[ART_index] || 1.1*count_ARTWomen_sum<ARTWomen_sum[ART_index]){
+            if (1.2*count_ARTMen_sum<ARTMen_sum[ART_index] || 1.2*count_ARTWomen_sum<ARTWomen_sum[ART_index]){
                 
                 int a=(RandomMinMax_2(1,countHIVRef-1));
                 //cout << "Random number: " << a << " counter: " << countHIVRef << endl;
@@ -225,7 +225,7 @@ void EventTellNewYear(person *MyPointerToPerson){
                     
                     
                     
-                    if (1.05*ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]){
+                    if (1.1*ARTAdult_Men[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]){
                         
                         MyArrayOfPointersToPeople[i]->ART=*p_GT;                        // Lets set ART date
                         MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
@@ -244,7 +244,7 @@ void EventTellNewYear(person *MyPointerToPerson){
                 if (MyArrayOfPointersToPeople[i]->Sex==2 && MyArrayOfPointersToPeople[i]->Age>=18 && MyArrayOfPointersToPeople[i]->HIV>0 && MyArrayOfPointersToPeople[i]->HIV<*p_GT && MyArrayOfPointersToPeople[i]->ART==-999 &&MyArrayOfPointersToPeople[i]->Alive==1 && count_ARTWomen_sum<ARTWomen_sum[ART_index]){
                     
                     
-                    if (1.05*ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Women[MyArrayOfPointersToPeople[i]->CD4_cat]){
+                    if (1.1*ARTAdult_Women[ART_index][MyArrayOfPointersToPeople[i]->CD4_cat] > count_ARTAdult_Women[MyArrayOfPointersToPeople[i]->CD4_cat]){
                         
                         
                         MyArrayOfPointersToPeople[i]->ART=*p_GT;            // Lets set ART date
@@ -831,29 +831,47 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
     if(MyPointerToPerson->Alive == 1 && MyPointerToPerson->Stroke_status==0) {
         
         MyPointerToPerson->Stroke_status=1;
-        
+    
+    
         // Lets see if we need to update death date
         int ncd_index=3;
-        
-        // Lets see if they die earlier
+        int error=0;
         int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
         int j=0;												// This will be matched to probability taken from random number generator
         double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
         double TestDeathDate;
+
         
-        if (MyPointerToPerson->Sex==1){
-            while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
-            TestDeathDate=(MyPointerToPerson->DoB+j);
+        // Lets see if they die within the year     REFERENCE: http://stroke.ahajournals.org/content/32/9/2131.full
+        double p_mort=((double) rand () / (RAND_MAX));
+        
+        if (p_mort<0.6)
+        {
+            double YearFraction=(RandomMinMax_2(1,12))/12.1;        // See when during this year this person will die
+            TestDeathDate=*p_GT + YearFraction;
+        }
+
+        // Lets see if they die earlier
+        if (p_mort>=0.6)
+        {
+            if (MyPointerToPerson->Sex==1){
+                while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+                TestDeathDate=(MyPointerToPerson->DoB+j);
+            }
+        
+            if (MyPointerToPerson->Sex==2) {
+                while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+                TestDeathDate=(MyPointerToPerson->DoB+j);
+            }
+            
+            
+            
         }
         
-        if (MyPointerToPerson->Sex==2) {
-            while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
-            TestDeathDate=(MyPointerToPerson->DoB+j);
-        }
-        
-        //cout << "test date " << TestDeathDate << " actual " << MyPointerToPerson->DateOfDeath << endl;
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
+            
+            //cout << "WE DID IT!" << endl << endl;
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
             
