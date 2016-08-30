@@ -865,6 +865,26 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
             }
             
             
+            /*while ((TestDeathDate>MyPointerToPerson->DateOfDeath || TestDeathDate<*p_GT) && error<100)
+            {
+                d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+                int j=0;
+                
+                if (MyPointerToPerson->Sex==1){
+                    while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
+                    TestDeathDate=(MyPointerToPerson->DoB+j);
+                }
+                
+                if (MyPointerToPerson->Sex==2) {
+                    while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
+                    TestDeathDate=(MyPointerToPerson->DoB+j);
+                }
+                
+                
+                error++;
+            }*/
+            
+            
             
         }
         
