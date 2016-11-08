@@ -83,6 +83,8 @@ double nine;
 double ten;
 double eleven;
 double twelve;
+double thirteen;
+double fourteen;
 
 extern double MortRisk[6];
 extern double MortRisk_Cancer[5];
@@ -100,8 +102,8 @@ int main(){
     
     cout << "Testing changes" << endl;
     // Lets do some fitting!
-    one   = RandomMinMax_3(100, 100)/1000;
-    two   = RandomMinMax_3(100, 100)/1000;
+    one   = RandomMinMax_3(100, 100)/100;
+    two   = RandomMinMax_3(100, 100)/100;
     three = RandomMinMax_3(100, 100)/100;
     four  = RandomMinMax_3(100, 100)/100;
     cout << "Strok Risk " << four << endl;
@@ -113,6 +115,8 @@ int main(){
     ten   = RandomMinMax_3(100, 100)/100;
     eleven= RandomMinMax_3(100, 100)/100;
     twelve= RandomMinMax_3(100, 100)/100;
+    thirteen= RandomMinMax_3(100, 100)/100;
+    fourteen= RandomMinMax_3(100, 100)/100;
     
     MortRisk[0]= one;
     MortRisk[1]= two;
@@ -126,8 +130,11 @@ int main(){
     MortRisk_Cancer[2] = nine;
     MortRisk_Cancer[3] = ten;
     MortRisk_Cancer[4] = eleven;
+    MortRisk_Cancer[5] = twelve;
+    MortRisk_Cancer[6] = thirteen;
     
-    MortAdj = twelve;
+    
+    MortAdj = four;
     
     
     
@@ -229,12 +236,12 @@ int main(){
     FILE* ProjectZim;
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
     //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Zimbabwe Results HIV/ProjectZim.csv","w");
     
     
     
     for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %d, \n",
+        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %d, \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -261,10 +268,12 @@ int main(){
                 MyArrayOfPointersToPeople[i]->CD4_change.at(6),
                 MyArrayOfPointersToPeople[i]->CauseOfDeath,
                 MyArrayOfPointersToPeople[i]->CKD,
+                MyArrayOfPointersToPeople[i]->Breast,
+                MyArrayOfPointersToPeople[i]->Cervical,
                 MyArrayOfPointersToPeople[i]->Colo,
                 MyArrayOfPointersToPeople[i]->Liver,
                 MyArrayOfPointersToPeople[i]->Oeso,
-                MyArrayOfPointersToPeople[i]->Stomach,
+                MyArrayOfPointersToPeople[i]->Prostate,
                 MyArrayOfPointersToPeople[i]->OtherCan,
                 MyArrayOfPointersToPeople[i]->Stroke_status
                 

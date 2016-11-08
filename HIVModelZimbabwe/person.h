@@ -57,14 +57,18 @@ public:
     double CKD;
     int CKD_status;
     
+    double Breast;
+    int Breast_status;
+    double Cervical;
+    int Cervical_status;
     double Colo;
     int Colo_status;
     double Liver;
     int Liver_status;
     double Oeso;
     int Oeso_status;
-    double Stomach;
-    int Stomach_status;
+    double Prostate;
+    int Prostate_status;
     double OtherCan;
     int OtherCan_status;
     

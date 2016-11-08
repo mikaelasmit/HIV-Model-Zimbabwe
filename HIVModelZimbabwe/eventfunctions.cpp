@@ -108,7 +108,7 @@ int nr_NCD_HT=sizeof(relatedNCDs_HT)/sizeof(relatedNCDs_HT[0]);
 
 
 //ART Array
-int ARTAdult_Men[12][7]={                       // ART by CD4 count from 2004 to 2015
+int ARTAdult_Men[13][7]={                       // ART by CD4 count from 2004 to 2015
     {0,   0,   0,   0,   12,  7,   6},
     {0,   0,   0,   0,   39,  22,  20},
     {0,   0,   0,   0,   90,  49,  43},
@@ -120,9 +120,10 @@ int ARTAdult_Men[12][7]={                       // ART by CD4 count from 2004 to
     {45,  40,  304,	212, 650, 308, 192},
     {55,  50,  424,	282, 714, 341, 209},
     {80,  205, 493,	330, 759, 367, 221},
+    {181, 693, 801,	523, 900, 396, 224},
     {181, 693, 801,	523, 900, 396, 224},};
 
-int ARTAdult_Women[12][7]={
+int ARTAdult_Women[13][7]={
     {0,   0,	0,	  0,   15,	 8,	  8},
     {0,	  0,	0,	  0,   50,	 28,  25},
     {0,	  0,	0,	  0,   106,	 58,  52},
@@ -134,13 +135,14 @@ int ARTAdult_Women[12][7]={
     {89,  81,	569,  395, 1168, 492, 273},
     {109, 100,	790,  517, 1271, 538, 290},
     {198, 388,	913,  597, 1338, 570, 300},
+    {412, 945,  1235, 786, 1450, 587, 302},
     {412, 945,  1235, 786, 1450, 587, 302},};
 
 int ARTKids[13] =     {4,  12,  41,  80,  120, 178,  268,  363,  435,  467,  506,  588, 300};     // This array is the sum of kids under 5 years old on ART
 
 // Parameters sums (sums of above arrays (across CD4 count - total for year)
-int ARTMen_sum[13] =  {24, 81,  183, 292, 402, 599,  951,  1395, 1751, 2075, 2455, 3719, 0};
-int ARTWomen_sum[13]= {31, 104, 215, 427, 722, 1074, 1706, 2482, 3067, 3616, 4306, 5716, 0};
+int ARTMen_sum[13] =  {24, 81,  183, 292, 402, 599,  951,  1395, 1751, 2075, 2455, 3719, 3719};
+int ARTWomen_sum[13]= {31, 104, 215, 427, 722, 1074, 1706, 2482, 3067, 3616, 4306, 5716, 5716};
 
 
 
@@ -232,8 +234,7 @@ void EventTellNewYear(person *MyPointerToPerson){
                         count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]++;    // Update our counter CD4/ART array
                         count_ARTMen_sum++;                                             // Update the sum counter
                         Elig_Men=Elig_Men-1;
-                        if (*p_GT>2014){
-                        }
+                        
                     }
                     
                 }
@@ -252,8 +253,7 @@ void EventTellNewYear(person *MyPointerToPerson){
                         count_ARTAdult_Women[MyArrayOfPointersToPeople[i]->CD4_cat]++;  // Update our counter CD4/ART array
                         count_ARTWomen_sum++;                               // Update the sum counter
                         Elig_Women=Elig_Women-1;
-                        if (*p_GT>2014){
-                        }
+                       
                     }
                     
                 }
@@ -261,6 +261,9 @@ void EventTellNewYear(person *MyPointerToPerson){
             
         }
         
+        //cout << endl << "KIDS: There have " << Elig_Kids << " eligible kids and we need to reach " << ARTKids[ART_index] << " and only have " << count_ARTKids   << endl;
+        //cout << "Men: There have " << Elig_Men << " eligible men and we need to reach " << ARTMen_sum[ART_index] << " and only have " << count_ARTMen_sum << " times 10% " << 1.2*count_ARTMen_sum << endl;
+        //cout << "Women: There have " << Elig_Women << " eligible women and we need to reach " << ARTWomen_sum[ART_index] << " and only have " << count_ARTWomen_sum << " times 10% " << 1.2*count_ARTWomen_sum<< endl;
         
         // Lets update the ART index
         ART_index++;
@@ -1227,14 +1230,15 @@ void EventMyCKDDate (person *MyPointerToPerson)			// Function executed when pers
     }
 }
 
-void EventMyColoDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+
+void EventMyBreastDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     
-    E(cout << endl << endl << "This patient just developed Colorectum cancer!" << endl;)
+    E(cout << endl << endl << "This patient just developed breast cancer!" << endl;)
     
-    if (MyPointerToPerson->Colo_status==0 && MyPointerToPerson->Alive == 1){
+    if (MyPointerToPerson->Breast_status==0 && MyPointerToPerson->Alive == 1){
         
-        MyPointerToPerson->Colo_status=1;
+        MyPointerToPerson->Breast_status=1;
         
         // Lets see if we need to update death date
         int cancer_index=0;
@@ -1276,15 +1280,14 @@ void EventMyColoDate (person *MyPointerToPerson)			// Function executed when per
     }
 }
 
-
-void EventMyLiverDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+void EventMyCervicalDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     
-    E(cout << endl << endl << "This patient just developed Liver cancer!" << endl;)
+    E(cout << endl << endl << "This patient just developed cervical cancer!" << endl;)
     
-    if (MyPointerToPerson->Liver_status==0 && MyPointerToPerson->Alive == 1){
+    if (MyPointerToPerson->Cervical_status==0 && MyPointerToPerson->Alive == 1){
         
-        MyPointerToPerson->Liver_status=1;
+        MyPointerToPerson->Cervical_status=1;
         
         // Lets see if we need to update death date
         int cancer_index=1;
@@ -1304,8 +1307,6 @@ void EventMyLiverDate (person *MyPointerToPerson)			// Function executed when pe
             while(d>DeathArray_Women[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
-        
-        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
             
@@ -1328,15 +1329,14 @@ void EventMyLiverDate (person *MyPointerToPerson)			// Function executed when pe
     }
 }
 
-
-void EventMyOesoDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+void EventMyColoDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     
-    E(cout << endl << endl << "This patient just developed Liver cancer!" << endl;)
+    E(cout << endl << endl << "This patient just developed breast cancer!" << endl;)
     
-    if (MyPointerToPerson->Oeso_status==0 && MyPointerToPerson->Alive == 1){
+    if (MyPointerToPerson->Colo_status==0 && MyPointerToPerson->Alive == 1){
         
-        MyPointerToPerson->Oeso_status=1;
+        MyPointerToPerson->Colo_status=1;
         
         // Lets see if we need to update death date
         int cancer_index=2;
@@ -1379,14 +1379,15 @@ void EventMyOesoDate (person *MyPointerToPerson)			// Function executed when per
 }
 
 
-void EventMyStomachDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+
+void EventMyLiverDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     
     E(cout << endl << endl << "This patient just developed Liver cancer!" << endl;)
     
-    if (MyPointerToPerson->Stomach_status==0 && MyPointerToPerson->Alive == 1){
+    if (MyPointerToPerson->Liver_status==0 && MyPointerToPerson->Alive == 1){
         
-        MyPointerToPerson->Stomach_status=1;
+        MyPointerToPerson->Liver_status=1;
         
         // Lets see if we need to update death date
         int cancer_index=3;
@@ -1406,6 +1407,8 @@ void EventMyStomachDate (person *MyPointerToPerson)			// Function executed when 
             while(d>DeathArray_Women[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
+        
+        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
             
@@ -1429,14 +1432,14 @@ void EventMyStomachDate (person *MyPointerToPerson)			// Function executed when 
 }
 
 
-void EventMyOtherCanDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+void EventMyOesoDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
 {
     
     E(cout << endl << endl << "This patient just developed Liver cancer!" << endl;)
     
-    if (MyPointerToPerson->OtherCan_status==0 && MyPointerToPerson->Alive == 1){
+    if (MyPointerToPerson->Oeso_status==0 && MyPointerToPerson->Alive == 1){
         
-        MyPointerToPerson->OtherCan_status=1;
+        MyPointerToPerson->Oeso_status=1;
         
         // Lets see if we need to update death date
         int cancer_index=4;
@@ -1473,6 +1476,106 @@ void EventMyOtherCanDate (person *MyPointerToPerson)			// Function executed when
                 
                 // Update cause of death
                 MyPointerToPerson->CauseOfDeath=13;
+            }
+        }
+    }
+}
+
+
+void EventMyProstateDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    
+    E(cout << endl << endl << "This patient just developed prostate cancer!" << endl;)
+    
+    if (MyPointerToPerson->Prostate==0 && MyPointerToPerson->Alive == 1){
+        
+        MyPointerToPerson->Prostate_status=1;
+        
+        // Lets see if we need to update death date
+        int cancer_index=5;
+        
+        // Lets see if they die earlier
+        int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+        int j=0;												// This will be matched to probability taken from random number generator
+        double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+        double TestDeathDate;
+        
+        if (MyPointerToPerson->Sex==1){
+            while(d>DeathArray_Men[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (MyPointerToPerson->Sex==2) {
+            while(d>DeathArray_Women[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
+            
+            MyPointerToPerson->DateOfDeath=TestDeathDate;
+            
+            // 2. Lets feed death into the eventQ
+            if (MyPointerToPerson->DateOfDeath<EndYear){
+                int p=MyPointerToPerson->PersonID-1;
+                event * DeathEvent = new event;
+                Events.push_back(DeathEvent);
+                DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                DeathEvent->p_fun = &EventMyDeathDate;
+                DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+                p_PQ->push(DeathEvent);
+                
+                // Update cause of death
+                MyPointerToPerson->CauseOfDeath=14;
+            }
+        }
+    }
+}
+
+
+void EventMyOtherCanDate (person *MyPointerToPerson)			// Function executed when person develops hypertension
+{
+    
+    E(cout << endl << endl << "This patient just developed Liver cancer!" << endl;)
+    
+    if (MyPointerToPerson->OtherCan_status==0 && MyPointerToPerson->Alive == 1){
+        
+        MyPointerToPerson->OtherCan_status=1;
+        
+        // Lets see if we need to update death date
+        int cancer_index=6;
+        
+        // Lets see if they die earlier
+        int k=(MyPointerToPerson->DoB-1800);					// To find corresponding year of birth from mortality array
+        int j=0;												// This will be matched to probability taken from random number generator
+        double	d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
+        double TestDeathDate;
+        
+        if (MyPointerToPerson->Sex==1){
+            while(d>DeathArray_Men[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (MyPointerToPerson->Sex==2) {
+            while(d>DeathArray_Women[k][j]*MortRisk_Cancer[cancer_index] && j<121){j++;}
+            TestDeathDate=(MyPointerToPerson->DoB+j);
+        }
+        
+        if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
+            
+            MyPointerToPerson->DateOfDeath=TestDeathDate;
+            
+            // 2. Lets feed death into the eventQ
+            if (MyPointerToPerson->DateOfDeath<EndYear){
+                int p=MyPointerToPerson->PersonID-1;
+                event * DeathEvent = new event;
+                Events.push_back(DeathEvent);
+                DeathEvent->time = MyPointerToPerson->DateOfDeath;
+                DeathEvent->p_fun = &EventMyDeathDate;
+                DeathEvent->person_ID = MyArrayOfPointersToPeople[p];
+                p_PQ->push(DeathEvent);
+                
+                // Update cause of death
+                MyPointerToPerson->CauseOfDeath=15;
             }
         }
     }

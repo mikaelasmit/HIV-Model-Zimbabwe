@@ -44,7 +44,7 @@ int*      ArrayMax;
 
 // NCD Arrays
 int nr_NCDs=6;                                         // Change this as you need to
-int nr_Cancers=5;
+int nr_Cancers=7;
 
 
 //// --- Load parameters --- ////
@@ -667,8 +667,8 @@ void loadCancerArray(){
     
     // Else lets load the Array
     E(cout << "File " << &myfile << " successfully added" << endl;)
-    CancerArray = new double *[5];
-    for (int row = 0; row<5; row++){				// This loop will read in every number to the right place
+    CancerArray = new double *[7];
+    for (int row = 0; row<7; row++){				// This loop will read in every number to the right place
         string line;
         getline(myfile, line);
         stringstream iss(line);
