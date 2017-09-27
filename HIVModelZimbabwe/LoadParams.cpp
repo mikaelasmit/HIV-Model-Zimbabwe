@@ -1,13 +1,13 @@
-//
-//  LoadParams.cpp
-//  
-//
-//  Created by Mikaela Smit on 29/10/2015.
-//
-//
+/////////////////////////////////////////////////////////////////
+//    LoadParams.cpp                                           //
+//    Created by Mikaela Smit on 29/10/2015.				   //
+//    Copyright (c) 2015 Mikaela Smit. All rights reserved.    //
+//    Loads arrays and parameters from txt file                //
+/////////////////////////////////////////////////////////////////
+
 
 #include <iostream>
-#include <fstream>										// Adding some important libraries for reading in the arrays
+#include <fstream>										
 #include <sstream>
 #include <string>
 #include <vector>
@@ -21,7 +21,7 @@ using namespace std;
 //// --- Pointers to external arrays --- ////
 
 // Big Arrays
-double** BirthArray;									// This  is a pointer to an array!! i.e pointer to pointer :)
+double** BirthArray;
 double** DeathArray_Women;
 double** DeathArray_Men;
 double** HIVArray_Women;
@@ -46,6 +46,11 @@ int*      ArrayMax;
 int nr_NCDs=6;                                         // Change this as you need to
 int nr_Cancers=7;
 
+
+
+////////////////////////////////////////////////////////
+/////// --- READ IN KEY PARAMETERS FROM FILE --- ///////
+////////////////////////////////////////////////////////
 
 //// --- Load parameters --- ////
 void loadCD4StartArray(){

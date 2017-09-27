@@ -1,13 +1,15 @@
-///////////////////////////////////////////////////////////////////////////
-//    Created by Mikaela Smit on 07/11/2014.							 //
-//    This script provides properties of 'events' added to the EventQ.   // 
-///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//    event.h                                            //
+//    Created by Mikaela Smit on 07/11/2014.			 //
+//    Provides properties of 'events' added to EventQ.   //
+///////////////////////////////////////////////////////////
 
 
 #include <stdio.h> 
-#include "person.h"										// Need to include person header as we make pointer to persons in below
+#include "person.h"										
 #ifndef event_h										
 #define event_h	
+
 using namespace std;
 
 

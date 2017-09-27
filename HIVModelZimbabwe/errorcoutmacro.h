@@ -1,7 +1,9 @@
 /////////////////////////////////////////////////////////////////
+//    errorcoutmacro.h                                         //
 //    Created by Mikaela Smit on 24/04/2015.				   //
 //    Code from Jack Olney from 20/10/2014					   //
-//    This script helps to switch cout statements on/off	   //
+//    Copyright (c) All rights reserved.                       //
+//    This script helps to switch specific statements on/of    //
 /////////////////////////////////////////////////////////////////
 
 #ifndef priorityQ_errormacro_h

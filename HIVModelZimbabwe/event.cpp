@@ -1,8 +1,9 @@
-////////////////////////////////////////////////////////////////////////////////////////
-//    Created by Mikaela Smit on 30/10/2014.										  //
-//    This script provides the properties of new 'events' that are added to EventQ.   //
-////////////////////////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////
+//    event.cpp                                                     //
+//    Created by Mikaela Smit on 30/10/2014.						//
+//    Copyright (c) 2015 Mikaela Smit. All rights reserved.         //
+//    Provides  properties of new 'events' being added to EventQ.   //
+//////////////////////////////////////////////////////////////////////
 
 #include <stdio.h> 
 #include <iostream>
@@ -12,7 +13,7 @@
 #include "person.h"
 
 //// --- OUTSIDE INFORMATION --- ////
-extern double StartYear;									// Include Start Year so only have to change it once in main()
+extern double StartYear;									
 
 
 //// --- CLASS (EVENT) CONSTRUCTOR ---

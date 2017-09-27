@@ -1,10 +1,12 @@
-///////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+//    person.h                                                 //
 //    Created by Mikaela Smit on 22/10/2014.				   //
+//    Copyright (c) 2014 Mikaela Smit. All rights reserved.    //
 //    This script makes the people in the cohort.			   //
 /////////////////////////////////////////////////////////////////
 
 
-#ifndef person_h 									// If not defined then defines it  # are pre-compiler definitions
+#ifndef person_h 									
 #define person_h
 #include <vector>
 
@@ -71,6 +73,7 @@ public:
     int Prostate_status;
     double OtherCan;
     int OtherCan_status;
+
     
     vector<double> NCD_DatesVector;
     

@@ -4,19 +4,11 @@
 //    Copyright (c) 2014 Mikaela Smit. All rights reserved.   //
 ////////////////////////////////////////////////////////////////
 
-#include <iostream>
+#include <iostream>                                                         // important libraries
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
-#include "person.h"
-#include "event.h"
-#include "eventQ.h"
-#include "eventfunctions.h"
-#include "errorcoutmacro.h"
-#include "LoadParams.h"
-#include "CParamReader.hpp"
-
-#include <fstream>									// some important libraries for reading in the arrays
+#include <fstream>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -25,46 +17,37 @@
 #include <math.h>
 
 
-using namespace std;
+#include "person.h"
+#include "event.h"
+#include "eventQ.h"
+#include "eventfunctions.h"
+#include "errorcoutmacro.h"
+#include "LoadParams.h"
+#include "CParamReader.hpp"
 
 
-// GENERAL TO FIX OR EXPLORE
-// 1. Remove all unecessary code - tidy up
-// 2. When person dies, remove all related events, do something about events that should no longer happen
-// 3. Make various event types (people-specific/annual events,...)
-// 4. Use 'const' in model to stop model from changing variables thta it shouldn't change
-// 5. Add class destructors
-// 6. Make C++ run with Matlab ? THIS IS TAKING A WHILE AND I AM STILL BUSY WITH THIS.  I am going to look at SJ?s code for this
-// 7. Private versus public
-// 8. Think about making your own priortiy queue
+using namespace std;                                                        // use feature of the C++ Standard Library such as "string" and "vector"
 
 
-// TO DO List for HIV:
-// 1. Update HIV knowledge based on HIV test
-
-
-// !!!  IMPORTANT NOTES FOR MODEL !!!
-// 1. Note that the population should be running at 2565 (1/100) for population check and 25650 (1/1000) for HIV check!
-// 2. Note that model should be able to run up to 2035!! BUt it doesn't at the moment
-// 3. Make main parameters centrally available!!
-// 4. Main parameters for NCD can be changed at strat of eventfunction.cpp
+// !!!  IMPORTANT MODEL INFORMATION !!!
+// 2. Main parameters for NCD can be changed at strat of eventfunction.cpp
+// 3. Caution: if end date is extended beyond 2035 checks need to made for arrays, parameters etc!
 
 
 //// --- MAIN PARAMETERS - CENTRALLY AVAILABLE --- ////
 double *p_GT;																// Pointer to global time
-int *p_PY;																	// Pointer to show which year range we are on
-int PY=0;																	// Set the first pointer to year range reference to 0
-double StartYear=1950;														// Define Start Year if the model and set it to year of choice
-int EndYear=2035;															// If endyear is more than 2010, some things will need to get changes, an error message below has been set up as reminder
+int *p_PY;																	// Pointer to year range currently in (e.g. 1950 to 1955)
+int PY=0;																	// Set the first pointer to year range i.e. 1950-1955
+double StartYear=1950;														// Set start date of model
+int EndYear=2035;															// Set end date of model
+const long long int final_number_people=100000000;							// Give a large number to contain all people to be modelled
+int UN_ZimPop=2565000;                                                      // Number of people 1st Jan 1950 (calculated in Excel)
+int init_pop =UN_ZimPop/100;                                                // Devide UN number by 100 to make manageable and match output files
+int total_population=init_pop;												// set total pop to init pop at start of model
+double Sex_ratio=0.4986;                                                    // defined ratio of men versus women
 
 
-const long long int final_number_people=100000000;							// To determine the final size of the total population to be modeled - Have to now change [init_pop] to [final_number_people] to give the final size of 'matrix'
-int UN_ZimPop=2565000;
-int init_pop =UN_ZimPop/100;                                                // Initial population 1st Jan 1950 as 2,675 (x thousands) or 26,750 (x hundred) (see Excel for calculation - Zimbabwe)
-int total_population=init_pop;												// Update total population for output and for next new entry
-
-
-priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue so as to be able to push-in/pop-out new events that are ocurreing  as a result of 'primary' events in the queue, e.g. recurrent birthdays
+priority_queue<event*, vector<event*>, timeComparison> *p_PQ;				// Pointer to event queue 
 person** MyArrayOfPointersToPeople = new person*[final_number_people];		// First 'person*' is a pointer (address) and 'new person' and space for x person which will point to actual person below
 vector<event *> Events;
 
@@ -100,9 +83,10 @@ int main(){
     
     srand(time(NULL));														// Random Number generator using PC time
     
+    cout << MortRisk << endl;
     cout << "Testing changes" << endl;
     // Lets do some fitting!
-    one   = RandomMinMax_3(100, 100)/100;
+    /*one   = RandomMinMax_3(100, 100)/100;
     two   = RandomMinMax_3(100, 100)/100;
     three = RandomMinMax_3(100, 100)/100;
     four  = RandomMinMax_3(100, 100)/100;
@@ -134,13 +118,18 @@ int main(){
     MortRisk_Cancer[6] = thirteen;
     
     
-    MortAdj = four;
+    MortAdj = four;*/
     
-    
+    cout << MortRisk[0] << endl;
+    cout << MortRisk[1] << endl;
+    cout << MortRisk[2] << endl;
+    cout << MortRisk[3] << endl;
+    cout << MortRisk[4] << endl;
+    cout << MortRisk[5] << endl;
+    cout << MortRisk[6] << endl;
     
     cout << endl << "Hello, Mikaela!" << endl << endl ;								// Check if model is running
-    
-    
+   
     //// --- Load parameters --- ////
     cout << "Section 1 - We are loading the arrays" << endl;
     
@@ -184,6 +173,7 @@ int main(){
     priority_queue<event*, vector<event*>, timeComparison> iQ;				// Define th ePriority Q
     p_PQ=&iQ;																// Define pointer to event Q
     p_PY=&PY;
+    cout << p_PY << endl;
     
     
     //// --- MAKING POPULATION--- ////
@@ -234,14 +224,12 @@ int main(){
     
     //// --- Output the results in a csv file --- ////
     FILE* ProjectZim;
-    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/HIV check/ProjectZim.csv","w");
-    //ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Demography check - Zimbabwe/ProjectZim.csv","w");
-    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/Zimbabwe Results HIV/ProjectZim.csv","w");
+    ProjectZim = fopen("/Users/Mikaela/Dropbox/MATLAB/NCD check/Test.csv","w");    // Change name and file location here as applicable
     
     
     
-    for (int i=0; i<total_population; i++) {								// Change the i< X here as well as the "%d!!
-        fprintf(ProjectZim,"%d,%d,%f,%f,%d,%d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %d, \n",
+    for (int i=0; i<total_population; i++) {								// Note: If adding more variables to be output, need to adapt the %x
+        fprintf(ProjectZim,"%d, %d, %f, %f, %d, %d, %f, %d, %f, %d, %d, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f, %f, %f, %f, %f, %f, %d, \n",
                 MyArrayOfPointersToPeople[i]->PersonID,
                 MyArrayOfPointersToPeople[i]->Sex,
                 MyArrayOfPointersToPeople[i]->DoB,
@@ -277,20 +265,12 @@ int main(){
                 MyArrayOfPointersToPeople[i]->OtherCan,
                 MyArrayOfPointersToPeople[i]->Stroke_status
                 
-                
-                
-                
                 );}
     fclose(ProjectZim);
-    
-    
-    
     
     // COUNT OUTPUT FOR FITTING
     int count_2013deaths=0;
     int count_causeofdeath[14]={0};
-    
-    
     
     for (int i=0; i<total_population; i++) {
         if (MyArrayOfPointersToPeople[i]->DateOfDeath>=2013 && MyArrayOfPointersToPeople[i]->DateOfDeath<2014)
@@ -380,41 +360,7 @@ int main(){
     
     cout << "Least Square " << sum_MinLik << endl;
     
-    /*FILE* FMin_Zim;
-     FMin_Zim = fopen("/Users/Mikaela/Dropbox/MATLAB/FMin_Zimbabwe/FMin_Zim.csv","w");
-     
-     
-     fprintf(FMin_Zim, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f \n",
-     sum_MinLik,
-     one,
-     MortRisk[1],
-     MortRisk[2],
-     MortRisk[3],
-     MortRisk[4],
-     MortRisk[5],
-     MortRisk_Cancer[0],
-     MortRisk_Cancer[1],
-     MortRisk_Cancer[2],
-     MortRisk_Cancer[3],
-     MortRisk_Cancer[4],
-     MortAdj,
-     background_m,
-     HIV_m,
-     HT_m,
-     Depression_m,
-     Asthma_m,
-     Stroke_m,
-     Diabetes_m,
-     CKD_m,
-     Colo_m,
-     Liver_m,
-     Oeso_m,
-     Stomach_m,
-     OtherCan_m
-     
-     );
-     fclose(FMin_Zim);
-     */
+
     
     
     //// --- LETS AVOID MEMORY LEAKS AND DELETE ALL NEW EVENTS --- ////

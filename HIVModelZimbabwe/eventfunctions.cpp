@@ -1,4 +1,5 @@
 /////////////////////////////////////////////////////////////////
+//    eventfunction.cpp                                        //
 //    Created by Mikaela Smit on 07/11/2014.				   //
 //    Copyright (c) 2014 Mikaela Smit. All rights reserved.    //
 //    These event are added to the EventQ.					   //
@@ -9,27 +10,26 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
-#include <math.h>                                                          // For 'log'
+#include <math.h>                                                          
 #include <vector>
 #include "eventfunctions.h"
-#include "event.h"														   // Need to add these to be able to
-#include "eventQ.h"														   // [...]run Global Time and Recurrent events pointers
+#include "event.h"
+#include "eventQ.h"
 #include "person.h"
 #include "errorcoutmacro.h"
 #include "CParamReader.hpp"
 #include "LoadParams.h"
 
-
 using namespace std;
 
 
 //// --- OUTSIDE INFORMATION --- ////
-extern double *p_GT;														// Tell this .cpp that there is pointer to Global Time defined externally
-extern int EndYear;															// Include endyear so that we can avoid putting unnecessary items into EventQ
-extern priority_queue<event*, vector<event*>, timeComparison> *p_PQ;		// Tell this .cpp that there is a priorty_queue externall and define pointer to it
-extern int total_population;												// Update total population for output and for next new entry
-extern person** MyArrayOfPointersToPeople;									// Pointer to MyArrayOfPointersToPeople
-extern int *p_PY;															// Pointer to show which year range we are on
+extern double *p_GT;
+extern int EndYear;
+extern priority_queue<event*, vector<event*>, timeComparison> *p_PQ;
+extern int total_population;
+extern person** MyArrayOfPointersToPeople;
+extern int *p_PY;
 extern vector<event*> Events;
 extern int ART_start_yr;
 
@@ -48,14 +48,12 @@ extern double** DeathArray_Men;
 
 //// --- Important Internal informtaion --- ////
 int RandomMinMax_2(int min, int max){							// Provide function for random number generator between min and max number
-    return rand()%(max-min+1)+min;							    // !!!!Note: if min=0 and max=4 it will generate 0,1,2,3,4
+    return rand()%(max-min+1)+min;							    // Note: if min=0 and max=4 it will generate 0,1,2,3,4
 }
 
-///////////////////////////////
-///// NCD PARAMETERS HERE /////
-///////////////////////////////
 
-//// --- NCD INTERACTION PARAMETERS --- ////
+//// --- NCD PARAMETERS HERE --- ////
+//// NCD INTERACTION PARAMETERS ////
 double Risk_DiabHC=1.12;                                        // Having high cholesterol given diabtes etc ...
 double Risk_DiabHT=1.4;
 double Risk_DiabCKD=1.5;
@@ -68,19 +66,14 @@ double Risk_HTCKD=1.69;
 double Risk_HTCVD=1.26;
 
 
-/// --- Mortality for NCDs Parameters --- ///
-double MortRisk[6];
-double MortRisk_Cancer[5];
-double MortAdj;
+/// Mortality for NCDs Parameters ///
+double MortRisk[6]= {0.08, 0, 0.85, 1.3, 1.1, 0.8}; //{0.087, 0, 1.4, 670.87, 12.23, 5};         // Original values from Smith et al Factors associated with : 1.52 (HT), 1.77 (diabetes)
+double MortRisk_Cancer[5]= {1, 1, 1, 1, 1.05};                   //{0.087, 0, 1.4, 670.87, 12.23};   // Both this and above needs to be fitted
+double MortAdj=0.75;                                           // Adjustment to reduce background mortality rate
+ 
 
-
-/*double MortRisk[6]= {0.08, 0, 0.85, 1.3, 1.1, 0.8}; //{0.087, 0, 1.4, 670.87, 12.23, 5};         // Original values from Smith et al Factors associated with : 1.52 (HT), 1.77 (diabetes)
- double MortRisk_Cancer[5]= {1, 1, 1, 1, 1.05};                   //{0.087, 0, 1.4, 670.87, 12.23};   // Both this and above needs to be fitted
- double MortAdj=0.75;                                           // Adjustment to reduce background mortality rate
- */
-
-/// --- HIV Increased risk for NCD Parameter --- ///
-double Risk_HIVHT=1.49;                                       // Increased risk of HT given HIV (and CKD given HIV below) - from Schouten et al Cross sectional [...]
+/// HIV Increased risk for NCD Parameter ///
+double Risk_HIVHT=1.49;                                       // Increased risk of HT given HIV (and CKD given HIV below) - from Schouten et al CID 2016
 double Risk_HIVCKD=2;
 
 double Risk_NCDHIV[2]={Risk_HIVHT, Risk_HIVCKD};
@@ -97,6 +90,17 @@ int nr_NCD_HIV=sizeof(relatedNCD_HIV)/sizeof(relatedNCD_HIV[0]);
 // 5. CKD
 
 
+// 0. Colo
+// 1. Liver
+// 2. Oeseo
+// 3. Other
+// 4. Breast
+// 5. Cervical
+// 6. Prostate
+
+
+
+//// Tidy up
 double Risk_NCD_Diabetes[3]={Risk_DiabHT, Risk_DiabCVD, Risk_DiabCKD};
 int relatedNCDs_Diab[3]={0, 3, 5};
 int nr_NCD_Diab=sizeof(relatedNCDs_Diab)/sizeof(relatedNCDs_Diab[0]);
@@ -107,7 +111,7 @@ int relatedNCDs_HT[2]={3, 5};
 int nr_NCD_HT=sizeof(relatedNCDs_HT)/sizeof(relatedNCDs_HT[0]);
 
 
-//ART Array
+//// --- ART Array Parameter --- ////
 int ARTAdult_Men[13][7]={                       // ART by CD4 count from 2004 to 2015
     {0,   0,   0,   0,   12,  7,   6},
     {0,   0,   0,   0,   39,  22,  20},
@@ -176,7 +180,7 @@ int Elig_Kids=0;
 //// --- FUNCTIONS FOR EVENTS --- ////
 //////////////////////////////////////
 
-//// --- NEW YEAR FUNCTION --- ////
+//// --- NEW YEAR FUNCTION --- ////                                     // includes count of adults/kids on ART for error/infinite loop problems
 void EventTellNewYear(person *MyPointerToPerson){
     
     cout << "A new year has started, it is now " << *p_GT << endl;      // Tells us a new year has started
@@ -209,7 +213,6 @@ void EventTellNewYear(person *MyPointerToPerson){
                     MyArrayOfPointersToPeople[i]->CD4_cat_ARTstart=MyArrayOfPointersToPeople[i]->CD4_cat;       // Lets set CD4 cat at ART start
                     count_ARTKids++;                                    // Update our counter
                     Elig_Kids=Elig_Kids-1;
-                    
                 }
             }
             
@@ -234,11 +237,9 @@ void EventTellNewYear(person *MyPointerToPerson){
                         count_ARTAdult_Men[MyArrayOfPointersToPeople[i]->CD4_cat]++;    // Update our counter CD4/ART array
                         count_ARTMen_sum++;                                             // Update the sum counter
                         Elig_Men=Elig_Men-1;
-                        
                     }
                     
                 }
-                
                 
                 
                 // Lets start women on ART
@@ -420,7 +421,6 @@ void EventBirth(person *MyPointerToPerson){
         (MyArrayOfPointersToPeople[total_population-1])->GetMyDateCancers();
         
         
-        
         // Link Mother and Child
         (MyArrayOfPointersToPeople[total_population-1])->MotherID=MyPointerToPerson->PersonID;			// Give child their mothers ID
         MyPointerToPerson->ChildIDVector.push_back((MyArrayOfPointersToPeople[total_population-1]));	// Give mothers their child's ID
@@ -502,9 +502,6 @@ void EventMyHIVInfection(person *MyPointerToPerson){
         if (MyPointerToPerson->ART<0){
             
             if (CD4_test<death_test){
-                
-                //cout << "We are scheduling a CD4 progression " << endl;
-                
                 event * CD4change = new event;
                 Events.push_back(CD4change);
                 CD4change->time = *p_GT+CD4_test;
@@ -516,22 +513,20 @@ void EventMyHIVInfection(person *MyPointerToPerson){
             
             if (death_test<=CD4_test){
                 
-                //cout << "We are scheduling an HIV death " << endl;
+                double death_test_date = *p_GT +death_test;                  // Get the actual date, not just time until death
                 
-                double death_test_date = *p_GT +death_test;                     // Get the actual date, not just time until death
-                
-                if (death_test_date<MyPointerToPerson->DateOfDeath && death_test_date>*p_GT){            // Check HIV deaths happens before natural death
+                if (death_test_date<MyPointerToPerson->DateOfDeath && death_test_date>*p_GT){   // Check HIV deaths happens before natural death
                     
                     MyPointerToPerson->DateOfDeath=death_test_date;
                     
-                    event * DeathEvent = new event;								// In that case we need to add the new death date to the EventQ
+                    event * DeathEvent = new event;						    // In that case we need to add the new death date to the EventQ
                     Events.push_back(DeathEvent);
                     DeathEvent->time = MyPointerToPerson->DateOfDeath;
                     DeathEvent->p_fun = &EventMyDeathDate;
                     DeathEvent->person_ID = MyPointerToPerson;
                     p_PQ->push(DeathEvent);
                     
-                    MyPointerToPerson->CauseOfDeath=2;                          // and we will need to update Cause of Death
+                    MyPointerToPerson->CauseOfDeath=2;                      // and we will need to update Cause of Death
                 }
             }
         }
@@ -551,11 +546,11 @@ void EventMyHIVInfection(person *MyPointerToPerson){
             
             // Re-evaluate NCD related to HIV
             while (ncd_nr<nr_NCD_HIV){
-                double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+                double r = ((double) rand() / (RAND_MAX));                 // Get a random number for each NCD
                 
                 
                 // If we are getting an NCD lets get age and date
-                if (r<=NCDArray[relatedNCD_HIV[ncd_nr]][120]*Risk_NCDHIV[ncd_nr])                              // If they will get and NCD lets get the age and date and also update mortality
+                if (r<=NCDArray[relatedNCD_HIV[ncd_nr]][120]*Risk_NCDHIV[ncd_nr])             // If they will get and NCD lets get the age and date and also update mortality
                 {
                     
                     // Lets get the index for age at NCD
@@ -603,7 +598,7 @@ void EventMyHIVInfection(person *MyPointerToPerson){
                         
                     }
                     
-                    ncd_nr++;                                                       // Lets do the next NCD
+                    ncd_nr++;                                                    // Lets do the next NCD
                     
                 }
             }
@@ -616,7 +611,6 @@ void EventMyHIVInfection(person *MyPointerToPerson){
     
     E(cout << "Somebody has just been infected with HIV!" << endl;)				// Error message - can be switched on/off
 }
-
 
 
 void EventCD4change(person *MyPointerToPerson){
@@ -687,7 +681,6 @@ void EventCD4change(person *MyPointerToPerson){
             if (MyPointerToPerson->ART<0){
                 
                 if (CD4_test<death_test){
-                    //cout << "We are scheduling a CD4 progression " << endl;
                     event * CD4change = new event;
                     Events.push_back(CD4change);
                     CD4change->time = *p_GT+CD4_test;
@@ -697,8 +690,6 @@ void EventCD4change(person *MyPointerToPerson){
                 }
                 
                 if (death_test<=CD4_test){
-                    
-                    //cout << "We are scheduling an HIV death " << endl;
                     
                     double death_test_date = *p_GT +death_test;                      // Get the actual date, not just time until death
                     
@@ -720,14 +711,13 @@ void EventCD4change(person *MyPointerToPerson){
             
         }
         
-        
     }
     
     E(cout << "Somebody has just experiences a drop in CD4 count!" << endl;)	// Error message - can be switched on/off
 }
 
 
-//////// NCD EVENTS //////
+//// --- NCD EVENTS --- ////
 
 void EventMyDepressionDate(person *MyPointerToPerson)		// Function executed when person develops depression
 {
@@ -778,7 +768,7 @@ void EventMyDepressionDate(person *MyPointerToPerson)		// Function executed when
     
 }
 
-void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when person develops asthma
+void EventMyAsthmaDate(person *MyPointerToPerson)			     // Function executed when person develops asthma
 {
     E(cout << endl << endl << "This patient just developed asthma!" << endl;)
     
@@ -804,8 +794,6 @@ void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when pe
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
-        
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
@@ -827,7 +815,7 @@ void EventMyAsthmaDate(person *MyPointerToPerson)			// Function executed when pe
     }
 }
 
-void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when person develops hypertension
+void EventMyStrokeDate(person *MyPointerToPerson)			    // Function executed when person develops hypertension
 {
     E(cout << endl << endl << "This patient just developed stroke!" << endl;)
     
@@ -845,12 +833,12 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
         double TestDeathDate;
 
         
-        // Lets see if they die within the year     REFERENCE: http://stroke.ahajournals.org/content/32/9/2131.full
+        // Lets see if they die within the year                 REFERENCE: http://stroke.ahajournals.org/content/32/9/2131.full
         double p_mort=((double) rand () / (RAND_MAX));
         
         if (p_mort<0.6)
         {
-            double YearFraction=(RandomMinMax_2(1,12))/12.1;        // See when during this year this person will die
+            double YearFraction=(RandomMinMax_2(1,12))/12.1;     // See when during this year this person will die
             TestDeathDate=*p_GT + YearFraction;
         }
 
@@ -866,35 +854,10 @@ void EventMyStrokeDate(person *MyPointerToPerson)			// Function executed when pe
                 while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
                 TestDeathDate=(MyPointerToPerson->DoB+j);
             }
-            
-            
-            /*while ((TestDeathDate>MyPointerToPerson->DateOfDeath || TestDeathDate<*p_GT) && error<100)
-            {
-                d = ((double) rand() / (RAND_MAX)) ;			// get a random number to determine Life Expectancy
-                int j=0;
-                
-                if (MyPointerToPerson->Sex==1){
-                    while(d>DeathArray_Men[k][j]*MortRisk[ncd_index] && j<121){j++;}
-                    TestDeathDate=(MyPointerToPerson->DoB+j);
-                }
-                
-                if (MyPointerToPerson->Sex==2) {
-                    while(d>DeathArray_Women[k][j]*MortRisk[ncd_index] && j<121){j++;}
-                    TestDeathDate=(MyPointerToPerson->DoB+j);
-                }
-                
-                
-                error++;
-            }*/
-            
-            
-            
         }
         
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
-            
-            //cout << "WE DID IT!" << endl << endl;
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
             
@@ -945,8 +908,6 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
-        
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT){
             
             MyPointerToPerson->DateOfDeath=TestDeathDate;
@@ -970,7 +931,7 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
         
         // Some basic code and finding index for not getting NCDs
         int ncd_nr=0;
-        double DateNCD=-997;                                       // As with HIV, if they don't get NCDs set it to -998 to show code was executed
+        double DateNCD=-997;                                                               // As with HIV, if they don't get NCDs set it to -998 to show code was executed
         
         
         // Re-evaluate NCD related to diabetes
@@ -978,10 +939,7 @@ void EventMyDiabetesDate(person *MyPointerToPerson){
         {
             
             // Get a random number for each NCD
-            //cout << "Ncd_nr: " << ncd_nr << " position in diabetes array: " << relatedNCDs_Diab[ncd_nr] << endl;
             double r = ((double) rand() / (RAND_MAX));
-            //cout << "New max risk: " << NCDArray[relatedNCDs_Diab[ncd_nr]][120]*Risk_NCD_Diabetes[ncd_nr] << " old risk: " << NCDArray[ncd_nr][120] << endl;
-            
             
             // If we are getting an NCD lets get the age and date of NCD
             if (r<NCDArray[relatedNCDs_Diab[ncd_nr]][120]*Risk_NCD_Diabetes[ncd_nr])
@@ -1117,9 +1075,6 @@ void EventMyHyptenDate(person *MyPointerToPerson)			// Function executed when pe
             // Get a random number for each NCD
             double r = ((double) rand() / (RAND_MAX));
             
-            //cout << "Testing: Code " << MyPointerToPerson->NCD_DatesVector.at(relatedNCDs_Diab[ncd_nr]) << " ncd nr: " << ncd_nr << " related NCD " << MyPointerToPerson->NCD_DatesVector.at(0) << " \ " << MyPointerToPerson->NCD_DatesVector.at(1) << " \ " << MyPointerToPerson->NCD_DatesVector.at(2) << " \ " << MyPointerToPerson->NCD_DatesVector.at(3) << " \ " << MyPointerToPerson->NCD_DatesVector.at(4) << " \ " << MyPointerToPerson->NCD_DatesVector.at(5) << endl;
-            
-            
             
             // If we are getting an NCD lets get the age and date of NCD
             if (r<NCDArray[relatedNCDs_HT[ncd_nr]][120]*Risk_NCD_HT[ncd_nr])
@@ -1207,7 +1162,6 @@ void EventMyCKDDate (person *MyPointerToPerson)			// Function executed when pers
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
             
@@ -1408,7 +1362,6 @@ void EventMyLiverDate (person *MyPointerToPerson)			// Function executed when pe
             TestDeathDate=(MyPointerToPerson->DoB+j);
         }
         
-        //cout << "Test death date: " <<TestDeathDate << " actual date " << MyPointerToPerson->DateOfDeath << endl;
         
         if (TestDeathDate<MyPointerToPerson->DateOfDeath && TestDeathDate>*p_GT) {
             

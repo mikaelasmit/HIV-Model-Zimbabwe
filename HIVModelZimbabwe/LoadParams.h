@@ -1,11 +1,10 @@
+/////////////////////////////////////////////////////////////////
+//    LoadParams.h                                             //
+//    Created by Mikaela Smit on 29/10/2015.				   //
+//    Copyright (c) 2015 Mikaela Smit. All rights reserved.    //
+//    Loads arrays and parameters from txt file                //
+/////////////////////////////////////////////////////////////////
 
- //
-//  LoadParams.h
-//  
-//
-//  Created by Mikaela Smit on 29/10/2015.
-//
-//
 
 #ifndef ____LoadParams__
 #define ____LoadParams__
@@ -21,7 +20,7 @@ void loadNCDArray();
 void loadCancerArray();
 
 
-//// --- Shorter Parameter Arrays --- ////
+//// --- Shorter Parameter Arrays from txt file --- ////
 
 void loadCD4StartArray();
 void loadCD4ProgArray();

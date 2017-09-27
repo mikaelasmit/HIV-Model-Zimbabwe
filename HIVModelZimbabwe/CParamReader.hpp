@@ -1,10 +1,9 @@
-//
-//  CParam.hpp
-//  HIVModel
-//
-//  Created by Mikaela Smit on 29/10/2015.
-//  Copyright © 2015 Mikaela Smit. All rights reserved.
-//
+/////////////////////////////////////////////////////////////////
+//    CParamReader.hpp                                         //
+//    Created by Mikaela Smit on 29/10/2015.				   //
+//    Copyright (c) 2015 Mikaela Smit. All rights reserved.    //
+//    Makes arrays from parameters being uploaded              //
+/////////////////////////////////////////////////////////////////
 
 
 #ifndef CPARAMREADER_H_

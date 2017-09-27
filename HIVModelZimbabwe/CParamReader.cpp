@@ -1,22 +1,19 @@
-//
-//  CParamReader.cpp
-//  HIVModel
-//
-//  Created by Mikaela Smit on 29/10/2015.
-//  Copyright © 2015 Mikaela Smit. All rights reserved.
-//
+/////////////////////////////////////////////////////////////////
+//    CParamReader.cpp                                         //
+//    Created by Mikaela Smit on 29/10/2015.				   //
+//    Copyright (c) 2015 Mikaela Smit. All rights reserved.    //
+//    Makes arrays from parameters being uploaded              //
+/////////////////////////////////////////////////////////////////
 
 
-#include <iostream>
+#include <iostream>                   
 #include <string.h>
 #include <vector>
 #include <string>
 #include "CParamReader.hpp"
 #include "errorcoutmacro.h"
 
-
 using namespace std;
-
 
 
 // Class Constructor
@@ -33,7 +30,6 @@ CParamReader::~CParamReader()
     if(filePathString!=NULL)
         delete[] filePathString;
 }
-
 
 
 // Set the file name and check that it exists, unattaches previous file if necessary.
@@ -95,6 +91,7 @@ char* CParamReader::getParamString(const char* paramName, int& nElements, int& r
                     // 1. Lets get the next line and first line of data
                     paramFileStream.getline(paramBuffer,BUFFER_SIZE-1);         // this updates 'token'
                     //cout << "Token: " << token << endl;
+                    
                     // We will run this until we find the ; - which annotes end of the variable data
                     if (token[0]!=';' && token[0]!=' ' && token!=NULL && token[0]!='#')
                     {

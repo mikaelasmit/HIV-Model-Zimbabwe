@@ -1,11 +1,12 @@
 /////////////////////////////////////////////////////////////////
+//    person.cpp                                               //
 //    Created by Mikaela Smit on 22/10/2014.				   //
 //    Copyright (c) 2014 Mikaela Smit. All rights reserved.    //
 //    This script makes the people in the cohort.			   //
 /////////////////////////////////////////////////////////////////
 
 
-#include <stdio.h>	 									// Include some essential libraries and files
+#include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
 #include <cmath>
@@ -18,20 +19,21 @@
 
 
 //// --- OUTSIDE INFORMATION --- ////
-extern double   *p_GT;									// Tell this .cpp that there is pointer to Global Time defined externally
-extern double   StartYear;								// Include Start Year so only have to change it once in main()
-extern int      EndYear;								// Include endyear so that we can avoid putting unnecessary items into EventQ
-extern int      *p_PY;									// Pointer to show which year range we are on
-extern          person** MyArrayOfPointersToPeople;		// Pointer to MyArrayOfPointersToPeople
+extern double   *p_GT;
+extern double   StartYear;
+extern int      EndYear;
+extern int      *p_PY;
+extern          person** MyArrayOfPointersToPeople;
 extern int      nr_NCDs;
 extern int      nr_Cancers;
 extern          priority_queue<event*, vector<event*>, timeComparison> *p_PQ;
 extern          vector<event*> Events;
+extern double   Sex_ratio;
 
 
 
 //// --- POINTERS TO EXTERNAL ARRAYS --- ////
-extern double** BirthArray;							 	// This  is a pointer to an array!! i.e pointer to pointer :)
+extern double** BirthArray;							 	
 extern double** DeathArray_Women;
 extern double** DeathArray_Men;
 extern double** HIVArray_Women;
@@ -66,21 +68,21 @@ int RandomLONGMinMax(long int min, long int max){			// Provide function for rand
 
 person::person()											// First 'person' class second constructor/variable and no return type means its a constructor
 {
-    PersonID=0;												// --- Peoples' basic information ---
+    PersonID=0;												// --- Basic variable ---
     Sex=-999;
     
-    DoB=-999;												// --- Varibales related to peoples' age and birthday ---
+    DoB=-999;												// -- Variables related to age --
     Age=-999;
-    // --- Variables related to birth of children ---
-    MotherID=-999;											// Dummy value (i.e. those born before 1950 will not have the ID of mother)
+    
+    MotherID=-999;											// --- Variables related to birth of children --- //
     ChildIDVector.resize(0);								// Vector to store pointer to children.  Make sure it's starting size is 0 at the beginning
     DatesBirth.resize(0);									// This will be used to push in all births of every child
     DatesBirthALL.resize(0);                                // This will be used to push in all births of every child - even those that happen after death
     
     DateOfDeath=9999;										// --- Varibles related to death ---
     CauseOfDeath=-999;                                      // 1=other, 2=HIV, 3=HT, 4=depression, 5=Asthma,6=Stroke, 7=Diabetes, 8=CKD,9-colo, 10-liver, 11-Oeso, 12-stomach, 13-other cancer
-    AgeAtDeath=-999;										// NOTE: VERY IMPORTANT this number needs to be HIGH as it entres EventQ
-    Alive=-999;												// Variable to update eventQ - global check to see if person is still alive
+    AgeAtDeath=-999;
+    Alive=-999;
     
     HIV=-999;												// --- Variables related to HIV-infection ---
     CD4_cat_start=-999;                                     // CD4 at HIV infection
@@ -139,7 +141,7 @@ void person::GenderDistribution(){
     E(cout << "We are assigning gender!" << endl;)
     
     double	r = ((double) rand() / (RAND_MAX)) ;
-    if (r<=0.4986){Sex=1;}									// Where 1 = man and 2= woman
+    if (r<=Sex_ratio){Sex=1;}									// Where 1 = man and 2= woman
     else {Sex=2;}
     
     E(cout << "We finished assigning gender!" << endl;)
@@ -188,13 +190,7 @@ void person::GetDateOfBaby(){								// This method already calculates the child
         // The csv files are loaded elsewhere
         int m=0;											// Count of how many children I will have - can be used to manage ChildVector and loop
         double DateOfBirthTest=-9999;
-        //int ChildBearingYears=AgeAtDeath-15;
         
-        
-        //// --- Just in case the person is going to die early, lets let her have as many kdis as possible first --- ////
-        /*if(ChildBearingYears<NrChildren){
-         NrChildren=ChildBearingYears;
-         }*/
         
         
         //// --- Let's see when the first birth will happen and check it doesn' ocurr before death --- ////
@@ -205,18 +201,8 @@ void person::GetDateOfBaby(){								// This method already calculates the child
             
             DateOfBirthTest = DoB + 15 +j;
             
-            /*while (DateOfBirthTest>=DateOfDeath){			// Run this loop in case death ocurrs before birth
-             double	f = ((double)rand() / (RAND_MAX));
-             int j = 0;
-             while (f>BirthArray[index][j] && j<35){ j++; };
-             DateOfBirthTest = DoB + 15+j;
-             
-             };
-             
-             if (j>=34){
-             }*/
             
-            DatesBirthALL.push_back(DateOfBirthTest);			// Once we checked birth doesn't happen before birth lets push that in
+            DatesBirthALL.push_back(DateOfBirthTest);	    // Once we checked birth doesn't happen before birth lets push that in
             
             
             //// --- Lets check if I am already giving birth at this age --- ////
@@ -440,7 +426,7 @@ void person::GetMyDateNCD(){
         
         // Lets get the dates for the NCDs
         while (ncd<nr_NCDs){
-            double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+            double r = ((double) rand() / (RAND_MAX));              // Get a random number for each NCD
             
             //cout << "R: " << r << " ncd " << ncd << " max index " << NCDArray[ncd][120] << endl;
             //cout << "DateNCD " << DateNCD << endl;
@@ -467,7 +453,7 @@ void person::GetMyDateNCD(){
                 
                 
                 // Lets get the age and date they will have the NCD
-                double YearFraction=(RandomMinMax(1,12))/12.1;                          // This gets month of birth as a fraction of a year
+                double YearFraction=(RandomMinMax(1,12))/12.1;     // This gets month of birth as a fraction of a year
                 DateNCD=DoB+i+YearFraction;
                 
                 
@@ -567,7 +553,7 @@ void person::GetMyDateNCD(){
             }
             
             NCD_DatesVector.push_back(DateNCD);
-            ncd++;                                                                      // Lets do the next NCD
+            ncd++;                                                 // Lets do the next NCD
         }
     }
     E(cout << "We finished assigning NCDs!" << endl;)
@@ -587,11 +573,11 @@ void person::GetMyDateCancers(){
     // Lets get the dates for the NCDs
     while (cancer<nr_Cancers){
         
-        double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+        double r = ((double) rand() / (RAND_MAX));                 // Get a random number for each NCD
         
         if (cancer<4)
         {
-            if (r>CancerArray[cancer][120])                             // If they DO NOT get an NCD set date to -998
+            if (r>CancerArray[cancer][120])                        // If they DO NOT get an NCD set date to -998
             {
                 if      (cancer==0)    {Colo=-998;}
                 else if (cancer==1)    {Liver=-998;}
@@ -600,7 +586,7 @@ void person::GetMyDateCancers(){
             }
             
             
-            if (r<=CancerArray[cancer][120])                                    // If cancer: lets get age and date
+            if (r<=CancerArray[cancer][120])                       // If cancer: lets get age and date
             {
                 // Lets get the index for age at NCD
                 int i=0;
@@ -608,13 +594,13 @@ void person::GetMyDateCancers(){
                 
                 
                 // Lets get the age and date they will have the NCD
-                double YearFraction=(RandomMinMax(1,12))/12.1;                  // This gets month of birth as a fraction of a year
+                double YearFraction=(RandomMinMax(1,12))/12.1;     // This gets month of birth as a fraction of a year
                 DateCancer=DoB+i+YearFraction;
                 AgeAtDeath=DateOfDeath-DoB;
                 
                 while (DateCancer>DateOfDeath){
                     
-                    double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+                    double r = ((double) rand() / (RAND_MAX));     // Get a random number for each NCD
                     
                     if (r>CancerArray[cancer][120] && cancer>0)    // If they DO NOT get an NCD set date to -998
                     {
@@ -661,7 +647,7 @@ void person::GetMyDateCancers(){
             }
             
             
-            if (r<=CancerArray[cancer][120])                              // If cancer: lets get age and date
+            if (r<=CancerArray[cancer][120])                            // If cancer: lets get age and date
             {
                 // Lets get the index for age at NCD
                 int i=0;
@@ -669,13 +655,13 @@ void person::GetMyDateCancers(){
                 
                 
                 // Lets get the age and date they will have the NCD
-                double YearFraction=(RandomMinMax(1,12))/12.1;                  // This gets month of birth as a fraction of a year
+                double YearFraction=(RandomMinMax(1,12))/12.1;         // This gets month of birth as a fraction of a year
                 DateCancer=DoB+i+YearFraction;
                 AgeAtDeath=DateOfDeath-DoB;
                 
                 while (DateCancer>DateOfDeath){
                     
-                    double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+                    double r = ((double) rand() / (RAND_MAX));          // Get a random number for each NCD
                     
                     if (r>CancerArray[cancer][120] && AgeAtDeath<50)    // If they DO NOT get an NCD set date to -998
                     {
@@ -684,22 +670,15 @@ void person::GetMyDateCancers(){
                         DateCancer=-998;
                     }
                     
-                    /*if (r>CancerArray[cancer][120] && cancer==5 && AgeAtDeath<50)    // If they DO NOT get an NCD set date to -998
-                    {
-                        if      (cancer==4)    {Breast=-998;}
-                        else if (cancer==5)    {Cervical=-998;}
-                        DateCancer=-998;
-                    }*/
                     
-                    
-                    if (r<=CancerArray[cancer][120])                                // If cancer: lets get age and date
+                    if (r<=CancerArray[cancer][120])                    // If cancer: lets get age and date
                     {
                         // Lets get the index for age at NCD
                         int i=0;
                         while (r>CancerArray[cancer][i]){i++;}
                         
                         // Lets get the age and date they will have the NCD
-                        double YearFraction=(RandomMinMax(1,12))/12.1;              // This gets month of birth as a fraction of a year
+                        double YearFraction=(RandomMinMax(1,12))/12.1;  // This gets month of birth as a fraction of a year
                         DateCancer=DoB+i+YearFraction;
                     }
                 }
@@ -712,14 +691,14 @@ void person::GetMyDateCancers(){
         // Lets do the male-specific cancers (prostate)
         if (cancer==6 && Sex==1)
         {
-            //cout << "Cancer nr: " << cancer << " max index " << CancerArray[cancer][120] << endl;
+            
             if (r>CancerArray[cancer][120])                             // If they DO NOT get an NCD set date to -998
             {
                 if (cancer==6)    {Prostate=-998;}
             }
             
             
-            if (r<=CancerArray[cancer][120])                              // If cancer: lets get age and date
+            if (r<=CancerArray[cancer][120])                            // If cancer: lets get age and date
             {
                 // Lets get the index for age at NCD
                 int i=0;
@@ -727,13 +706,13 @@ void person::GetMyDateCancers(){
                 
                 
                 // Lets get the age and date they will have the NCD
-                double YearFraction=(RandomMinMax(1,12))/12.1;                  // This gets month of birth as a fraction of a year
+                double YearFraction=(RandomMinMax(1,12))/12.1;          // This gets month of birth as a fraction of a year
                 DateCancer=DoB+i+YearFraction;
                 AgeAtDeath=DateOfDeath-DoB;
                 
                 while (DateCancer>DateOfDeath){
                     
-                    double r = ((double) rand() / (RAND_MAX));                  // Get a random number for each NCD
+                    double r = ((double) rand() / (RAND_MAX));          // Get a random number for each NCD
                     
                     if (r>CancerArray[cancer][120] && AgeAtDeath<45)    // If they DO NOT get an NCD set date to -998
                     {
@@ -742,14 +721,14 @@ void person::GetMyDateCancers(){
                     }
                     
                     
-                    if (r<=CancerArray[cancer][120])                                // If cancer: lets get age and date
+                    if (r<=CancerArray[cancer][120])                    // If cancer: lets get age and date
                     {
                         // Lets get the index for age at NCD
                         int i=0;
                         while (r>CancerArray[cancer][i]){i++;}
                         
                         // Lets get the age and date they will have the NCD
-                        double YearFraction=(RandomMinMax(1,12))/12.1;              // This gets month of birth as a fraction of a year
+                        double YearFraction=(RandomMinMax(1,12))/12.1;  // This gets month of birth as a fraction of a year
                         DateCancer=DoB+i+YearFraction;
                     }
                 }
@@ -874,7 +853,7 @@ void person::GetMyDateCancers(){
         }
         
         NCD_DatesVector.push_back(DateCancer);
-        cancer++;                                                                      // Lets do the next NCD
+        cancer++;                                                              // Lets do the next NCD
     }
     E(cout << "We finished assigning Cancers!" << endl;)
 }
